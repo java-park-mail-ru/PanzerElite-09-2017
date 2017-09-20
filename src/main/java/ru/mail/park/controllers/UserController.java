@@ -8,16 +8,14 @@ import org.springframework.http.HttpStatus;
 import javax.servlet.http.HttpSession;
 
 @RestController
+@CrossOrigin(origins = "*", maxAge = 3600)
 @RequestMapping("/api/user")
 public class UserController {
 
     private UserService userService = new UserService();
 
     private static final String SESSIONKEY = "user";
-    private static final String URL = "*";
-    private static final Integer AGE = 3600;
 
-    @CrossOrigin(origins = URL, maxAge = AGE)
     @RequestMapping(path = "/login", method = RequestMethod.POST, produces = "application/json", consumes = "application/json")
     public ResponseEntity<String> loginUser(@RequestBody User body, HttpSession httpSession) {
         final ResponseEntity<String> res = new ResponseEntity<>(userService.login(body));
@@ -25,7 +23,6 @@ public class UserController {
         return res;
     }
 
-    @CrossOrigin(origins = URL, maxAge = AGE)
     @RequestMapping(path = "/register", method = RequestMethod.POST, produces = "application/json", consumes = "application/json")
     public ResponseEntity<String> registerUser(@RequestBody User body, HttpSession httpSession) {
         final ResponseEntity<String> res = new ResponseEntity<>( userService.register(body));
@@ -33,7 +30,6 @@ public class UserController {
         return res;
     }
 
-    @CrossOrigin(origins = URL, maxAge = AGE)
     @RequestMapping(path = "/getuser", method = RequestMethod.GET, produces = "application/json")
     public ResponseEntity<String> getUser( HttpSession httpSession) {
         final ResponseEntity<String> answer;
@@ -46,7 +42,6 @@ public class UserController {
         return answer;
     }
 
-    @CrossOrigin(origins = URL, maxAge = AGE)
     @RequestMapping(path = "/logout", method = RequestMethod.GET, produces = "application/json")
     public ResponseEntity<String> logoutUser( HttpSession httpSession) {
         final ResponseEntity<String> answer;
@@ -59,7 +54,6 @@ public class UserController {
         return answer;
     }
 
-    @CrossOrigin(origins = URL, maxAge = AGE)
     @RequestMapping(path = "/changepassword", method = RequestMethod.POST, produces = "application/json", consumes = "application/json")
     public ResponseEntity<String> changePasswordUser(@RequestBody User body, HttpSession httpSession) {
         final User user = (User) httpSession.getAttribute( SESSIONKEY);
