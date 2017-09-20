@@ -4,6 +4,8 @@ jdk:
   - oraclejdk8
 deploy:
   provider: heroku
+  api_key:
+    secure: $key
   app: PanzerElite
   on:
     repo: java-park-mail-ru/PanzerElite-09-2017
