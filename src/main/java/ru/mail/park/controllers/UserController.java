@@ -2,7 +2,6 @@ package ru.mail.park.controllers;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import ru.mail.park.helpers.Constants;
 import ru.mail.park.models.User;
 import ru.mail.park.services.UserService;
 import org.springframework.http.HttpStatus;
@@ -10,7 +9,7 @@ import org.springframework.http.HttpStatus;
 import javax.servlet.http.HttpSession;
 
 @RestController
-@CrossOrigin(origins = "*", maxAge = Constants.CROSS_ORIGIN_MAX_AGE)
+@CrossOrigin(origins = "*")
 @RequestMapping("/api/user")
 public class UserController {
 
