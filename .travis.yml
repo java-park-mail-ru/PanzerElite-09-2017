@@ -1,1 +1,12 @@
 language: java
+deploy:
+  provider: heroku
+  api_key:
+    secure: d9f76ec3-1595-4a78-a1fa-e7d6ee3ba30d
+  app: PanzerElite
+  on:
+    repo: java-park-mail-ru/PanzerElite-09-2017
+    branch: working
+  skip_cleanup: true
+install:
+  - mvn test -B
