@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import org.json.JSONObject;
 
 public class User {
-    private String id;
+    private long id;
     private String login;
     private String password;
 
@@ -15,7 +15,7 @@ public class User {
 
     @JsonCreator
     public User(
-            @JsonProperty("id") String id,
+            @JsonProperty("id") long id,
             @JsonProperty("login") String login,
             @JsonProperty("password") String password
     ) {
@@ -32,7 +32,7 @@ public class User {
         return jsonObject;
     }
 
-    public String getId() {
+    public long getId() {
         return id;
     }
 
@@ -44,7 +44,7 @@ public class User {
         return password;
     }
 
-    public void setId(String id) {
+    public void setId(long id) {
         this.id = id;
     }
 

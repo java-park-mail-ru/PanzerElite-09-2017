@@ -47,7 +47,8 @@ public class UserController {
     public ResponseEntity<String> logoutUser(HttpSession httpSession) {
         final ResponseEntity<String> answer;
         if (httpSession.getAttribute(SESSIONKEY) != null) {
-            httpSession.removeAttribute(SESSIONKEY);
+            //httpSession.removeAttribute(SESSIONKEY);
+            httpSession.invalidate();
             answer = new ResponseEntity<>(HttpStatus.OK);
         } else {
             answer = new ResponseEntity<>(HttpStatus.BAD_REQUEST);

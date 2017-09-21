@@ -21,7 +21,8 @@ public class UserService {
     public HttpStatus login(User user) {
         final String login = user.getLogin();
         final String password = user.getPassword();
-        if (db.get(login) != null && db.get(login).getPassword().equals(password)) {
+        final User dbUser = db.get(login);
+        if (dbUser != null && dbUser.getPassword().equals(password)) {
             return HttpStatus.OK;
         } else {
             return HttpStatus.NOT_FOUND;
@@ -29,19 +30,20 @@ public class UserService {
     }
 
     public HttpStatus register(User user) {
-        user.setId(String.valueOf(idgen.getAndIncrement()));
-        if (db.put(user.getLogin(), user) == null) {
+        user.setId(idgen.getAndIncrement());
+        if (db.get(user.getLogin()) == null) {
+            db.put(user.getLogin(), user);
             return HttpStatus.OK;
         } else {
-            idgen.getAndDecrement();
             return HttpStatus.FORBIDDEN;
         }
     }
 
     public HttpStatus changePassword(User user) {
+        final User dbUser = db.get(user.getLogin());
         final String password = user.getPassword();
-        if (db.get(user.getLogin()) != null) {
-            db.get(user.getLogin()).setPassword(password);
+        if (dbUser != null) {
+            dbUser.setPassword(password);
             return HttpStatus.OK;
         } else {
             return HttpStatus.FORBIDDEN;
