@@ -19,48 +19,44 @@ public class UserController {
 
     @RequestMapping(path = "/login", method = RequestMethod.POST, produces = "application/json", consumes = "application/json")
     public ResponseEntity<String> loginUser(@RequestBody User body, HttpSession httpSession) {
-        final ResponseEntity<String> res = new ResponseEntity<>(userService.login(body));
+        final ResponseEntity<String> res = ResponseEntity.status(userService.login(body)).body("Trying to log in");
         setHttpSession(res, httpSession, body);
         return res;
     }
 
     @RequestMapping(path = "/register", method = RequestMethod.POST, produces = "application/json", consumes = "application/json")
     public ResponseEntity<String> registerUser(@RequestBody User body, HttpSession httpSession) {
-        final ResponseEntity<String> res = new ResponseEntity<>(userService.register(body));
+        final ResponseEntity<String> res =ResponseEntity.status(userService.register(body)).body("Trying to register");
         setHttpSession(res, httpSession, body);
         return res;
     }
 
     @RequestMapping(path = "/getuser", method = RequestMethod.GET, produces = "application/json")
     public ResponseEntity<String> getUser(HttpSession httpSession) {
-        final ResponseEntity<String> answer;
         final User user = (User) httpSession.getAttribute(SESSIONKEY);
         if (user != null) {
-            answer = new ResponseEntity<>(user.getUser().toString(), HttpStatus.OK);
+            return ResponseEntity.status(HttpStatus.OK).body(user.getUser().toString());
         } else {
-            answer = new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not authorized");
         }
-        return answer;
     }
 
     @RequestMapping(path = "/logout", method = RequestMethod.GET, produces = "application/json")
     public ResponseEntity<String> logoutUser(HttpSession httpSession) {
-        final ResponseEntity<String> answer;
         if (httpSession.getAttribute(SESSIONKEY) != null) {
             //httpSession.removeAttribute(SESSIONKEY);
             httpSession.invalidate();
-            answer = new ResponseEntity<>(HttpStatus.OK);
+            return ResponseEntity.status(HttpStatus.OK).body("Successful log out");
         } else {
-            answer = new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Unsuccessful log out");
         }
-        return answer;
     }
 
     @RequestMapping(path = "/changepassword", method = RequestMethod.POST, produces = "application/json", consumes = "application/json")
     public ResponseEntity<String> changePasswordUser(@RequestBody User body, HttpSession httpSession) {
         final User user = (User) httpSession.getAttribute(SESSIONKEY);
         body.setLogin(user.getLogin());
-        final ResponseEntity<String> res = new ResponseEntity<>(userService.changePassword(body));
+        final ResponseEntity<String> res = ResponseEntity.status(userService.changePassword(body)).body("Trying to change password");
         setHttpSession(res, httpSession, body);
         return res;
     }
