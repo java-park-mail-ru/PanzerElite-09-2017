@@ -37,7 +37,8 @@ public class UserController {
     public ResponseEntity<String> getUser(HttpSession httpSession) {
         final User user = (User) httpSession.getAttribute(SESSIONKEY);
         if (user != null) {
-            return ResponseEntity.status(HttpStatus.OK).body(user.getUser().toString());
+            //return ResponseEntity.status(HttpStatus.OK).body(user.getUser().toString());
+            return ResponseEntity.status(HttpStatus.OK).body("xuy");
         } else {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("UNAUTHORIZED");
         }
