@@ -69,7 +69,7 @@ public class UserController {
         }
     }
 
-    public HttpStatus getStatus(Boolean flag) {
+    public HttpStatus getStatus(boolean flag) {
 
         if (flag) {
             return HttpStatus.OK;
