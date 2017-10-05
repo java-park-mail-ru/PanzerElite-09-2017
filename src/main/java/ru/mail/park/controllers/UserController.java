@@ -70,6 +70,11 @@ public class UserController {
     }
 
     public HttpStatus getStatus(Boolean flag) {
-        return flag ? HttpStatus.OK : HttpStatus.FORBIDDEN;
+
+        if (flag) {
+            return HttpStatus.OK;
+        } else {
+            return HttpStatus.FORBIDDEN;
+        }
     }
 }
