@@ -9,7 +9,7 @@ import org.springframework.http.HttpStatus;
 import javax.servlet.http.HttpSession;
 
 @RestController
-@CrossOrigin(origins = {"https://panzerelitefront.herokuapp.com/", "http://localhost:8000/"})
+@CrossOrigin(origins = {"https://panzerelitefront.herokuapp.com", "http://127.0.0.1:8000"})
 @RequestMapping("/api/user")
 public class UserController {
 
