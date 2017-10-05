@@ -9,7 +9,7 @@ import org.springframework.http.HttpStatus;
 import javax.servlet.http.HttpSession;
 
 @RestController
-@CrossOrigin(origins = "*")
+@CrossOrigin(origins = "http://127.0.0.1:8000/")
 @RequestMapping("/api/user")
 public class UserController {
 
@@ -37,8 +37,7 @@ public class UserController {
     public ResponseEntity<String> getUser(HttpSession httpSession) {
         final User user = (User) httpSession.getAttribute(SESSIONKEY);
         if (user != null) {
-            //return ResponseEntity.status(HttpStatus.OK).body(user.getUser().toString());
-            return ResponseEntity.status(HttpStatus.OK).body("xuy");
+            return ResponseEntity.status(HttpStatus.OK).body(user.getUser().toString());
         } else {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("UNAUTHORIZED");
         }
