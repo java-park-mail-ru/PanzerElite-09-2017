@@ -2,7 +2,6 @@ package ru.mail.park.models;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import org.json.JSONObject;
 
 public class User {
     private long id;
@@ -24,12 +23,8 @@ public class User {
         this.password = password;
     }
 
-    public JSONObject getUser() {
-        final JSONObject jsonObject = new JSONObject();
-        jsonObject.put("id", id);
-        jsonObject.put("login", login);
-        jsonObject.put("password", password);
-        return jsonObject;
+    public Object getUser() {
+        return this;
     }
 
     public long getId() {
