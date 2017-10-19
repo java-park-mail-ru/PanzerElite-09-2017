@@ -1,48 +1,94 @@
 package ru.mail.park.services;
 
+import org.springframework.dao.DataAccessException;
+import org.springframework.dao.DuplicateKeyException;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.mail.park.models.User;
 
+import java.sql.PreparedStatement;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
 
 @Service
+@Transactional
 public class UserService {
-    private Map<String, User> db;
-    private AtomicLong idgen;
+    private final JdbcTemplate template;
+    private final NamedParameterJdbcTemplate namedTemplate;
 
-    public UserService() {
-        db = new HashMap<>();
-        idgen = new AtomicLong(0);
+    public UserService(JdbcTemplate template, NamedParameterJdbcTemplate namedTemplate) {
+        this.template = template;
+        this.namedTemplate = namedTemplate;
     }
 
-    public Boolean login(User user) {
-        final String login = user.getLogin();
-        final String password = user.getPassword();
-        final User dbUser = db.get(login);
-        return (dbUser != null && dbUser.getPassword().equals(password));
+    public User getUserByLogin(String login) {
+        try {
+            return template.queryForObject(
+                    "SELECT * FROM users WHERE lower(login) = lower(?)",
+                    new Object[]{login}, USER_MAPPER);
+        } catch (DataAccessException e) {
+            return null;
+        }
     }
 
-    public Boolean register(User user) {
-        user.setId(idgen.getAndIncrement());
-        if (db.get(user.getLogin()) == null) {
-            db.put(user.getLogin(), user);
+    public User createUser(User body) {
+        final GeneratedKeyHolder keyHolder = new GeneratedKeyHolder();
+        try {
+            template.update(con -> {
+                final PreparedStatement pst = con.prepareStatement(
+                        "insert into users(login, password, frags, deaths, rank )"
+                                + " values(?,?,?,?,?)" + " returning id",
+                        PreparedStatement.RETURN_GENERATED_KEYS);
+                pst.setString(1, body.getLogin());
+                pst.setString(2, body.getPassword());
+                pst.setInt(3, body.getFrags());
+                pst.setInt(4, body.getDeaths());
+                pst.setInt(5, body.getRank());
+                return pst;
+            }, keyHolder);
+            body.setId(keyHolder.getKey().intValue());
+            return body;
+        } catch (DuplicateKeyException e) {
+            return null;
+        }
+    }
+
+    public Boolean changePassword(User body) {
+        if (getUserByLogin(body.getLogin()) == null) {
+            return false;
+        }
+        final GeneratedKeyHolder keyHolder = new GeneratedKeyHolder();
+        try {
+            template.update(con -> {
+                final PreparedStatement pst = con.prepareStatement(
+                        "update users set" +
+                                "  password = COALESCE(?, password) " +
+                                " where LOWER(login) = LOWER(?) ",
+                        PreparedStatement.RETURN_GENERATED_KEYS);
+                pst.setString(1, body.getPassword());
+                pst.setString(2, body.getLogin());
+                return pst;
+            }, keyHolder);
             return true;
-        } else {
+        } catch (DataAccessException e) {
             return false;
         }
     }
 
-    public Boolean changePassword(User user) {
-        final User dbUser = db.get(user.getLogin());
-        final String password = user.getPassword();
-        if (dbUser != null) {
-            dbUser.setPassword(password);
-            return true;
-        } else {
-            return false;
-        }
-    }
+    private static final RowMapper<User> USER_MAPPER = (res, num) -> {
+        String login = res.getString("login");
+        String password = res.getString("password");
+        Integer id = res.getInt("id");
+        Integer rank = res.getInt("rank");
+        Integer deaths = res.getInt("deaths");
+        Integer frags = res.getInt("frags");
+        return new User(id, frags, deaths, rank, login, password);
+    };
 
 }
+
