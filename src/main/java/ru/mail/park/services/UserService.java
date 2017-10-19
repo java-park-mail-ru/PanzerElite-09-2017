@@ -11,9 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.mail.park.models.User;
 
 import java.sql.PreparedStatement;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.atomic.AtomicLong;
+
 
 @Service
 @Transactional
@@ -39,6 +37,9 @@ public class UserService {
     public User createUser(User body) {
         final GeneratedKeyHolder keyHolder = new GeneratedKeyHolder();
         try {
+            final int three = 3;
+            final int four = 4;
+            final int five = 5;
             template.update(con -> {
                 final PreparedStatement pst = con.prepareStatement(
                         "insert into users(login, password, frags, deaths, rank )"
@@ -46,9 +47,9 @@ public class UserService {
                         PreparedStatement.RETURN_GENERATED_KEYS);
                 pst.setString(1, body.getLogin());
                 pst.setString(2, body.getPassword());
-                pst.setInt(3, body.getFrags());
-                pst.setInt(4, body.getDeaths());
-                pst.setInt(5, body.getRank());
+                pst.setInt(three, body.getFrags());
+                pst.setInt(four, body.getDeaths());
+                pst.setInt(five, body.getRank());
                 return pst;
             }, keyHolder);
             body.setId(keyHolder.getKey().intValue());
@@ -66,9 +67,9 @@ public class UserService {
         try {
             template.update(con -> {
                 final PreparedStatement pst = con.prepareStatement(
-                        "update users set" +
-                                "  password = COALESCE(?, password) " +
-                                " where LOWER(login) = LOWER(?) ",
+                        "update users set"
+                                + "  password = COALESCE(?, password) "
+                                + " where LOWER(login) = LOWER(?) ",
                         PreparedStatement.RETURN_GENERATED_KEYS);
                 pst.setString(1, body.getPassword());
                 pst.setString(2, body.getLogin());
