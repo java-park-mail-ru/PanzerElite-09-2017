@@ -7,6 +7,8 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
+import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 import ru.mail.park.models.User;
 
@@ -14,7 +16,6 @@ import java.sql.PreparedStatement;
 
 
 @Service
-@Transactional
 public class UserService {
     private final JdbcTemplate template;
     private final NamedParameterJdbcTemplate namedTemplate;
@@ -34,22 +35,18 @@ public class UserService {
         }
     }
 
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
     public User createUser(User body) {
         final GeneratedKeyHolder keyHolder = new GeneratedKeyHolder();
         try {
-            final int three = 3;
-            final int four = 4;
-            final int five = 5;
             template.update(con -> {
                 final PreparedStatement pst = con.prepareStatement(
-                        "insert into users(login, password, frags, deaths, rank )"
-                                + " values(?,?,?,?,?)" + " returning id",
+                        "insert into users(login, password)"
+                                + " values(?,?)" + " returning id",
                         PreparedStatement.RETURN_GENERATED_KEYS);
                 pst.setString(1, body.getLogin());
                 pst.setString(2, body.getPassword());
-                pst.setInt(three, body.getFrags());
-                pst.setInt(four, body.getDeaths());
-                pst.setInt(five, body.getRank());
+
                 return pst;
             }, keyHolder);
             body.setId(keyHolder.getKey().intValue());
@@ -59,6 +56,7 @@ public class UserService {
         }
     }
 
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
     public Boolean changePassword(User body) {
         if (getUserByLogin(body.getLogin()) == null) {
             return false;
@@ -68,7 +66,7 @@ public class UserService {
             template.update(con -> {
                 final PreparedStatement pst = con.prepareStatement(
                         "update users set"
-                                + "  password = COALESCE(?, password) "
+                                + "  password = ? "
                                 + " where LOWER(login) = LOWER(?) ",
                         PreparedStatement.RETURN_GENERATED_KEYS);
                 pst.setString(1, body.getPassword());
@@ -85,10 +83,7 @@ public class UserService {
         String login = res.getString("login");
         String password = res.getString("password");
         Integer id = res.getInt("id");
-        Integer rank = res.getInt("rank");
-        Integer deaths = res.getInt("deaths");
-        Integer frags = res.getInt("frags");
-        return new User(id, frags, deaths, rank, login, password);
+        return new User(id, login, password);
     };
 
 }

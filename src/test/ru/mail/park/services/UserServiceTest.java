@@ -43,7 +43,7 @@ public class UserServiceTest {
 
     @Test
     public void testSimpleCreateUser() {
-        final User newUser = new User(0, 0, 0, 0, LOGIN, PASSWORD);
+        final User newUser = new User(0, LOGIN, PASSWORD);
 
         final User createdUser = userService.createUser(newUser);
 
@@ -54,10 +54,10 @@ public class UserServiceTest {
 
     @Test
     public void testCreateDuplicateUser() {
-        final User user = new User(0, 0, 0, 0, LOGIN, PASSWORD);
+        final User user = new User(0, LOGIN, PASSWORD);
         userService.createUser(user);
 
-        final User duplicatedUser = new User(0, 0, 0, 0, LOGIN, PASSWORD);
+        final User duplicatedUser = new User(0, LOGIN, PASSWORD);
         assert (userService.createUser(duplicatedUser) == null);
     }
 
@@ -65,7 +65,7 @@ public class UserServiceTest {
     @Test
     public void testGetUserByLogin() {
 
-        final User user = new User(0, 0, 0, 0, LOGIN, PASSWORD);
+        final User user = new User(0, LOGIN, PASSWORD);
         final User createdUser = userService.createUser(user);
 
         final User foundedUser = userService.getUserByLogin(createdUser.getLogin());
@@ -75,7 +75,7 @@ public class UserServiceTest {
 
     @Test
     public void updateUser() {
-        final User user = new User(0, 0, 0, 0, LOGIN, PASSWORD);
+        final User user = new User(0, LOGIN, PASSWORD);
         userService.createUser(user);
         user.setPassword(UPDATED_PASSWORD);
 

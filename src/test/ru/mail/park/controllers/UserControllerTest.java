@@ -47,7 +47,7 @@ public class UserControllerTest {
 
     @Test
     public void testRegisterEmptyLoginAndPas() {
-        final User user = new User(0, 0, 0, 0, "", "");
+        final User user = new User(0, "", "");
         final HttpEntity<User> requestEntity = new HttpEntity<>(user, REQUEST_HEADERS);
 
         final ResponseEntity<String> response = restTemplate.postForEntity("/api/user/register", requestEntity, String.class);
@@ -61,7 +61,7 @@ public class UserControllerTest {
         final User emptyUser = new User();
         when(userService.getUserByLogin(anyString())).thenReturn(emptyUser);
 
-        final User newProfile = new User(0, 0, 0, 0, LOGIN, PASSWORD);
+        final User newProfile = new User(0, LOGIN, PASSWORD);
         final HttpEntity<User> requestEntity = new HttpEntity<>(newProfile, REQUEST_HEADERS);
 
         final ResponseEntity<String> response = restTemplate.postForEntity("/api/user/register", requestEntity, String.class);
