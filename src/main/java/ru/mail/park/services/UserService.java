@@ -1,5 +1,6 @@
 package ru.mail.park.services;
 
+
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -74,9 +75,11 @@ public class UserService {
             }, keyHolder);
             return true;
         } catch (DataAccessException e) {
+
             return false;
         }
     }
+
 
     private static final RowMapper<User> USER_MAPPER = (res, num) -> {
         String login = res.getString("login");
@@ -86,4 +89,5 @@ public class UserService {
     };
 
 }
+
 

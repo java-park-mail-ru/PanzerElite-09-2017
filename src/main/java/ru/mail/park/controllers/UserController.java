@@ -2,7 +2,9 @@ package ru.mail.park.controllers;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
 import ru.mail.park.models.Message;
+
 import ru.mail.park.models.User;
 import ru.mail.park.services.UserService;
 import org.springframework.http.HttpStatus;
@@ -10,6 +12,7 @@ import org.springframework.http.HttpStatus;
 import javax.servlet.http.HttpSession;
 
 @RestController
+
 @CrossOrigin({"*", "https://panzerelitefront.herokuapp.com"})
 @RequestMapping("/api/user")
 public class UserController {
@@ -19,9 +22,11 @@ public class UserController {
         this.userService = usr;
     }
 
+
     private static final String SESSIONKEY = "user";
 
     @RequestMapping(path = "/login", method = RequestMethod.POST, produces = "application/json", consumes = "application/json")
+
     public ResponseEntity<?> loginUser(@RequestBody User body, HttpSession httpSession) {
         final User user = userService.getUserByLogin(body.getLogin());
         if (user == null || !body.getPassword().equals(user.getPassword())) {
@@ -54,20 +59,24 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.OK).body(user);
         } else {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new Message("UNAUTHORIZED"));
+
         }
     }
 
     @RequestMapping(path = "/logout", method = RequestMethod.GET, produces = "application/json")
+
     public ResponseEntity<?> logoutUser(HttpSession httpSession) {
         if (httpSession.getAttribute(SESSIONKEY) != null) {
             httpSession.invalidate();
             return ResponseEntity.status(HttpStatus.OK).body(new Message("Successful logout"));
         } else {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new Message("Unsuccessful logout"));
+
         }
     }
 
     @RequestMapping(path = "/changepassword", method = RequestMethod.POST, produces = "application/json", consumes = "application/json")
+
     public ResponseEntity<?> changePasswordUser(@RequestBody User body, HttpSession httpSession) {
         final User user = (User) httpSession.getAttribute(SESSIONKEY);
         body.setLogin(user.getLogin());
@@ -82,6 +91,7 @@ public class UserController {
     public void setHttpSession(HttpSession httpSession, User body) {
         httpSession.setAttribute(SESSIONKEY, body);
     }
+
 
 
 }
