@@ -1,10 +1,11 @@
 package ru.mail.park.controllers.websocket;
 
 
-import com.sun.istack.internal.NotNull;
 import ru.mail.park.models.HandleException;
 import ru.mail.park.models.User;
 import ru.mail.park.models.ActionStates;
+
+import javax.validation.constraints.NotNull;
 
 public abstract class SocketMessageHandler<T extends ActionStates> {
     @NotNull

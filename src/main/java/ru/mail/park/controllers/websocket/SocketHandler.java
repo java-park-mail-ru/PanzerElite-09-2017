@@ -1,10 +1,9 @@
 package ru.mail.park.controllers.websocket;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.sun.istack.internal.NotNull;
-import com.sun.istack.internal.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.lang.Nullable;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
@@ -12,6 +11,7 @@ import org.springframework.web.socket.handler.TextWebSocketHandler;
 import ru.mail.park.models.ActionStates;
 import ru.mail.park.models.User;
 
+import javax.validation.constraints.NotNull;
 import java.io.IOException;
 
 import static org.springframework.web.socket.CloseStatus.SERVER_ERROR;

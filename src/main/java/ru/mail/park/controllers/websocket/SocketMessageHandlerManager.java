@@ -1,6 +1,5 @@
 package ru.mail.park.controllers.websocket;
 
-import com.sun.istack.internal.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -9,6 +8,7 @@ import ru.mail.park.models.User;
 import ru.mail.park.models.ActionStates;
 
 
+import javax.validation.constraints.NotNull;
 import java.util.HashMap;
 import java.util.Map;
 
