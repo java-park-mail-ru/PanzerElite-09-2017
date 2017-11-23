@@ -4,9 +4,9 @@ package ru.mail.park.controllers.websocket;
 import com.sun.istack.internal.NotNull;
 import ru.mail.park.models.HandleException;
 import ru.mail.park.models.User;
-import ru.mail.park.models.WebSocketMessage;
+import ru.mail.park.models.ActionStates;
 
-public abstract class SocketMessageHandler<T extends WebSocketMessage> {
+public abstract class SocketMessageHandler<T extends ActionStates> {
     @NotNull
     private final Class<T> clazz;
 
@@ -14,7 +14,7 @@ public abstract class SocketMessageHandler<T extends WebSocketMessage> {
         this.clazz = clazz;
     }
 
-    public void handleMessage(@NotNull WebSocketMessage message, @NotNull User forUser) throws HandleException {
+    public void handleMessage(@NotNull ActionStates message, @NotNull User forUser) throws HandleException {
         try {
             handle(clazz.cast(message), forUser);
         } catch (ClassCastException ex) {

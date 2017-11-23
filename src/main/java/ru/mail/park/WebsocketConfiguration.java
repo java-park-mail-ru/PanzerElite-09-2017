@@ -19,7 +19,7 @@ public class WebsocketConfiguration implements WebSocketConfigurer {
 
     @Override
     public void registerWebSocketHandlers(@NotNull WebSocketHandlerRegistry registry) {
-        registry.addHandler(webSocketHandler, "/game")
+        registry.addHandler(webSocketHandler, "/mgame")
                 .addInterceptors(new HttpSessionHandshakeInterceptor())
                 .setAllowedOrigins("*");
     }

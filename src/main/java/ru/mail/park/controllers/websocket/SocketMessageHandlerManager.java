@@ -6,7 +6,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import ru.mail.park.models.HandleException;
 import ru.mail.park.models.User;
-import ru.mail.park.models.WebSocketMessage;
+import ru.mail.park.models.ActionStates;
 
 
 import java.util.HashMap;
@@ -19,7 +19,7 @@ public class SocketMessageHandlerManager {
     private final Map<Class<?>, SocketMessageHandler<?>> handlers = new HashMap<>();
 
 
-    public void handle(@NotNull WebSocketMessage message, @NotNull User forUser) throws HandleException {
+    public void handle(@NotNull ActionStates message, @NotNull User forUser) throws HandleException {
 
         final SocketMessageHandler<?> messageHandler = handlers.get(message.getClass());
         if (messageHandler == null) {

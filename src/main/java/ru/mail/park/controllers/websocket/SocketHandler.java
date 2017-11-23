@@ -9,10 +9,8 @@ import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
-import ru.mail.park.models.HandleException;
+import ru.mail.park.models.ActionStates;
 import ru.mail.park.models.User;
-import ru.mail.park.models.WebSocketMessage;
-import ru.mail.park.utils.Constants;
 
 import java.io.IOException;
 
@@ -24,12 +22,15 @@ public class SocketHandler extends TextWebSocketHandler {
     private SocketMessageHandlerManager handlerManager;
     private ObjectMapper objectMapper;
     private static final String SESSIONKEY = "user";
+    private RoomService roomService;
 
 
     public SocketHandler(@NotNull SocketMessageHandlerManager manager,
-                         ObjectMapper objectMapper) {
+                         ObjectMapper objectMapper, RoomService rs) {
+        roomService = rs;
         this.handlerManager = manager;
         this.objectMapper = objectMapper;
+        System.out.println("constructor of socketHandeler");
     }
 
     @Override
@@ -39,10 +40,12 @@ public class SocketHandler extends TextWebSocketHandler {
             LOGGER.warn("User requested websocket is not registred or not logged in. Openning websocket session is denied.");
             closeSessionSilently(session, ACCESS_DENIED);
             return;
-        } else  {
+        } else {
+//            userSessions.put(session.getAttributes())
             LOGGER.warn("its ok");
+            session.getAttributes().put("UserId", user.getId());
+            roomService.add(session);
         }
-        //TODO open websocket
     }
 
     @Override
@@ -56,24 +59,21 @@ public class SocketHandler extends TextWebSocketHandler {
             closeSessionSilently(session, ACCESS_DENIED);
             return;
         }
-        handleMessage(user, message);
+        handleMessage(session, message);
     }
 
 
     @SuppressWarnings("OverlyBroadCatchBlock")
-    private void handleMessage(User userProfile, TextMessage text) {
-        final WebSocketMessage message;
+    private void handleMessage(WebSocketSession session, TextMessage text) {
+        final ActionStates message;
         try {
-            message = objectMapper.readValue(text.getPayload(), WebSocketMessage.class);
+            message = objectMapper.readValue(text.getPayload(), ActionStates.class);
+//            System.out.println(message.getForward() + " " + message.getBackward());
+            roomService.getMessage(message, session);
         } catch (IOException ex) {
             LOGGER.error("wrong json format at game response", ex);
-            return;
         }
-        try {
-            handlerManager.handle(message, userProfile);
-        } catch (HandleException e) {
-            LOGGER.error("Can't handle message of type " + message.getClass().getName() + " with content: " + text, e);
-        }
+      return;
     }
 
     @Override
