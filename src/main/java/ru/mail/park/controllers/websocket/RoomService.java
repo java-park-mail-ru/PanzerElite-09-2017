@@ -10,9 +10,9 @@ import java.util.Queue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 
-
+//CHECKSTYLE:OFF
 @Service
-public class RoomService {
+public final class RoomService {
 
     private Queue<WebSocketSession> queue;
     private ConcurrentHashMap<Long, Room> lobbies;

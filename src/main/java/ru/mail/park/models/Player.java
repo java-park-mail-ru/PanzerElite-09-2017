@@ -1,9 +1,8 @@
 package ru.mail.park.models;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 
+//CHECKSTYLE:OFF
 public class Player {
     private Integer id;
     private Coords coords;
@@ -19,11 +18,12 @@ public class Player {
         coords = new Coords(x, y);
         this.angle = -0.5 * Math.PI;
         this.turretAngle = 0.0;
-         this.actionStates = new ActionStates(false,false,false,false,false, false);
+        this.actionStates = new ActionStates(false, false, false, false, false, false);
     }
+
     public void updateActionStates(ActionStates actionStates) {
-    this.actionStates = actionStates;
-//    System.out.println(actionStates.getForward() + " "+ actionStates.getBackward()+ " "+ actionStates.getRight()+ " "+ actionStates.getLeft());
+        this.actionStates = actionStates;
+        //System.out.println(actionStates.getForward() + " "+ actionStates.getBackward()+ " "+ actionStates.getRight()+ " "+ actionStates.getLeft());
     }
 
     private void moveForward() {

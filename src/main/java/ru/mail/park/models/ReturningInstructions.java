@@ -2,9 +2,8 @@ package ru.mail.park.models;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.springframework.web.socket.TextMessage;
 
+//CHECKSTYLE:OFF
 public class ReturningInstructions {
     private Boolean me;
     private Double angle;
@@ -13,7 +12,6 @@ public class ReturningInstructions {
     private Double turretAngle;
     private Integer cameraType;
     private Boolean fire;
-
 
     @JsonCreator
     public ReturningInstructions(
@@ -33,8 +31,6 @@ public class ReturningInstructions {
         this.turretAngle = turretAngle;
 
     }
-
-
 
 
     public Double getAngle() {

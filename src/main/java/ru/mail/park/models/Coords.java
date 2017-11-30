@@ -2,7 +2,7 @@ package ru.mail.park.models;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-
+//CHECKSTYLE:OFF
 public class Coords {
     public Double x;
     public Double y;

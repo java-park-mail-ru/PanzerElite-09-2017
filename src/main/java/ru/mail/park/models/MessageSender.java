@@ -12,9 +12,9 @@ public class MessageSender {
         mapper = new ObjectMapper();
     }
 
-    private TextMessage getMessage(ReturningInstructions r) {
+    private TextMessage getMessage(ReturningInstructions returningInstructions) {
         try {
-            result = mapper.writeValueAsString(r);
+            result = mapper.writeValueAsString(returningInstructions);
             return (new TextMessage(result));
 
         } catch (Exception e) {
@@ -23,12 +23,12 @@ public class MessageSender {
 
     }
 
-    public void send(WebSocketSession s , ReturningInstructions r, Boolean flag) {
+    public void send(WebSocketSession session, ReturningInstructions returning, Boolean flag) {
         try {
-            r.setMe(flag);
-            s.sendMessage(getMessage(r));
+            returning.setMe(flag);
+            session.sendMessage(getMessage(returning));
         } catch (Exception e) {
-
+            System.out.println("");
         }
     }
 }

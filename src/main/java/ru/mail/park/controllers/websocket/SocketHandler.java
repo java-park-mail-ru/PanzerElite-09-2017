@@ -41,7 +41,6 @@ public class SocketHandler extends TextWebSocketHandler {
             closeSessionSilently(session, ACCESS_DENIED);
             return;
         } else {
-//            userSessions.put(session.getAttributes())
             LOGGER.warn("its ok");
             session.getAttributes().put("UserId", user.getId());
             roomService.add(session);
@@ -68,12 +67,12 @@ public class SocketHandler extends TextWebSocketHandler {
         final ActionStates message;
         try {
             message = objectMapper.readValue(text.getPayload(), ActionStates.class);
-//            System.out.println(message.getForward() + " " + message.getBackward());
+            //System.out.println(message.getForward() + " " + message.getBackward());
             roomService.getMessage(message, session);
         } catch (IOException ex) {
             LOGGER.error("wrong json format at game response", ex);
         }
-      return;
+        return;
     }
 
     @Override

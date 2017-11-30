@@ -1,19 +1,19 @@
 package ru.mail.park.models;
 
-import org.springframework.context.annotation.Bean;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.web.socket.WebSocketSession;
 
 public class Room {
     private Long id;
-    private Player p1, p2;
+    private Player p1;
+    private Player p2;
     private MessageSender sender;
 
     public Room(WebSocketSession s1, WebSocketSession s2) {
+        final Double startPosition = 50.0;
         System.out.println("im in room construcotr");
         this.id = (Long) s1.getAttributes().get("RoomId");
-        p1 = new Player(s1, (Integer) s1.getAttributes().get("UserId"), 50.0, 50.0);
-        p2 = new Player(s2, (Integer) s2.getAttributes().get("UserId"), 50.0, -50.0);
+        p1 = new Player(s1, (Integer) s1.getAttributes().get("UserId"), startPosition, startPosition);
+        p2 = new Player(s2, (Integer) s2.getAttributes().get("UserId"), startPosition, -1 * startPosition);
         sender = new MessageSender();
         GameLoop gl = new GameLoop(this);
         System.out.println("im in room construcotr2");
@@ -23,8 +23,8 @@ public class Room {
 
     }
 
-    public void getInstructions(ActionStates message, Integer uId) {
-        if (uId.equals(p1.getId())) {
+    public void getInstructions(ActionStates message, Integer uid) {
+        if (uid.equals(p1.getId())) {
             p1.updateActionStates(message);
         } else {
             p2.updateActionStates(message);
