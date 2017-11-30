@@ -10,6 +10,7 @@ public class Player {
     private Double angle;
     private Double turretAngle;
     private WebSocketSession session;
+    private ActionStates actionStates;
 
 
     public Player(WebSocketSession s, Integer id, Double x, Double y) {
@@ -18,6 +19,11 @@ public class Player {
         coords = new Coords(x, y);
         this.angle = -0.5 * Math.PI;
         this.turretAngle = 0.0;
+         this.actionStates = new ActionStates(false,false,false,false,false, false);
+    }
+    public void updateActionStates(ActionStates actionStates) {
+    this.actionStates = actionStates;
+//    System.out.println(actionStates.getForward() + " "+ actionStates.getBackward()+ " "+ actionStates.getRight()+ " "+ actionStates.getLeft());
     }
 
     private void moveForward() {
@@ -46,8 +52,7 @@ public class Player {
         this.turretAngle -= 0.008 * Math.PI;
     }
 
-    public void update(ActionStates actionStates) {
-        System.out.println(actionStates.getForward());
+    public void update() {
         if (actionStates.getForward()) {
             this.moveForward();
         }

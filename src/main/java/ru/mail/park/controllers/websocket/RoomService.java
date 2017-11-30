@@ -27,6 +27,7 @@ public class RoomService {
     public void add(WebSocketSession s) {
         queue.add(s);
         if (queue.size() > 1) {
+            System.out.println("2 players found");
             Long rId = idgen.getAndIncrement();
             WebSocketSession s1 = (WebSocketSession) queue.poll();
             s1.getAttributes().put("RoomId", rId);
