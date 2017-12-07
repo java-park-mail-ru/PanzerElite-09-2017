@@ -27,7 +27,8 @@ public class MessageSender {
         try {
             returning.setMe(flag);
             if(!flag) {
-                returning.setFire(false);
+//                returning.setFire(false);
+                returning.setCameraType(0);
             }
             session.sendMessage(getMessage(returning));
         } catch (Exception e) {

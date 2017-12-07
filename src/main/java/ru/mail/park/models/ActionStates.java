@@ -11,6 +11,7 @@ public class ActionStates {
     private Boolean turretLeft;
     private Boolean turretRight;
     private Boolean fire;
+    private Boolean changeCamera;
 
     @JsonCreator
     public ActionStates(
@@ -20,8 +21,10 @@ public class ActionStates {
             @JsonProperty("right") boolean right,
             @JsonProperty("turretLeft") boolean turretLeft,
             @JsonProperty("fire") boolean fire,
-            @JsonProperty("turretRight") boolean turretRight
+            @JsonProperty("turretRight") boolean turretRight,
+            @JsonProperty("changeCamera") boolean changeCamera
     ) {
+        this.changeCamera = changeCamera;
         this.fire = fire;
         this.forward = forward;
         this.backward = backward;
@@ -86,5 +89,13 @@ public class ActionStates {
 
     public void setFire(Boolean fire) {
         this.fire = fire;
+    }
+
+    public Boolean getChangeCamera() {
+        return changeCamera;
+    }
+
+    public void setChangeCamera(Boolean changeCamera) {
+        this.changeCamera = changeCamera;
     }
 }

@@ -18,20 +18,22 @@ public class Player {
     private WebSocketSession session;
     private ActionStates actionStates;
     private ActionStates DeprecatedMovemants;
+    private int cameraType;
 //    ScheduledExecutorService sh;
     private ArrayList<House> map;
 
 
     public Player(WebSocketSession s, Integer id, Double x, Double y, ArrayList map) {
+        this.cameraType = 0;
         this.map = map;
-        this.DeprecatedMovemants = new ActionStates(false, false, false, false, false, true, false);
+        this.DeprecatedMovemants = new ActionStates(false, false, false, false, false, true, false, false);
         this.bulletCoords = new Coords(0.0, 0.0);
         session = s;
         this.id = id;
         coords = new Coords(x, y);
         this.angle = -0.5 * Math.PI;
         this.turretAngle = 0.0;
-        this.actionStates = new ActionStates(false, false, false, false, false, false, false);
+        this.actionStates = new ActionStates(false, false, false, false, false, false, false, false);
 //        sh = Executors.newScheduledThreadPool(1);
     }
 
@@ -114,8 +116,12 @@ public class Player {
         if (actionStates.getTurretRight()) {
             this.turnTurretRight();
         }
+        if(actionStates.getChangeCamera()) {
+            actionStates.setChangeCamera(false);
+            this.cameraType++;
+            this.cameraType %= 3;
+        }
         if(actionStates.getFire() ) {
-//            sh.schedule(()-> DeprecatedMovemants.setFire(true), 4000, TimeUnit.MILLISECONDS);
             bulletCoords = fireCollision();
         }
     }
@@ -223,7 +229,7 @@ public class Player {
     }
 
     public ReturningInstructions getInstructionsOfPlayer() {
-        return new ReturningInstructions(true, coords, bulletCoords, angle, turretAngle, 0, actionStates.getFire());
+        return new ReturningInstructions(true, coords, bulletCoords, angle, turretAngle, cameraType, actionStates.getFire());
     }
 
     public WebSocketSession getSession() {

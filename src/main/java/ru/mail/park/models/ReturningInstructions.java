@@ -29,7 +29,7 @@ public class ReturningInstructions {
         this.x = coords.x;
         this.y = coords.y;
         this.angle = angle;
-        this.cameraType = 0;
+        this.cameraType = cameraType;
         this.fire = fire;
         this.turretAngle = turretAngle;
 
