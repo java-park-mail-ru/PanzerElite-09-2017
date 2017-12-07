@@ -10,6 +10,7 @@ public class ActionStates {
     private Boolean right;
     private Boolean turretLeft;
     private Boolean turretRight;
+    private Boolean fire;
 
     @JsonCreator
     public ActionStates(
@@ -18,8 +19,10 @@ public class ActionStates {
             @JsonProperty("left") boolean left,
             @JsonProperty("right") boolean right,
             @JsonProperty("turretLeft") boolean turretLeft,
+            @JsonProperty("fire") boolean fire,
             @JsonProperty("turretRight") boolean turretRight
     ) {
+        this.fire = fire;
         this.forward = forward;
         this.backward = backward;
         this.left = left;
@@ -77,4 +80,11 @@ public class ActionStates {
     }
 
 
+    public Boolean getFire() {
+        return fire;
+    }
+
+    public void setFire(Boolean fire) {
+        this.fire = fire;
+    }
 }

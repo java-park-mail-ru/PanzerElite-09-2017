@@ -2,18 +2,22 @@ package ru.mail.park.models;
 
 import org.springframework.web.socket.WebSocketSession;
 
+import java.util.ArrayList;
+
 public class Room {
     private Long id;
     private Player p1;
     private Player p2;
     private MessageSender sender;
+    private ArrayList<House> map;
 
     public Room(WebSocketSession s1, WebSocketSession s2) {
         final Double startPosition = 50.0;
         System.out.println("im in room construcotr");
         this.id = (Long) s1.getAttributes().get("RoomId");
-        p1 = new Player(s1, (Integer) s1.getAttributes().get("UserId"), startPosition, startPosition);
-        p2 = new Player(s2, (Integer) s2.getAttributes().get("UserId"), startPosition, -1 * startPosition);
+        mapInit();
+        p1 = new Player(s1, (Integer) s1.getAttributes().get("UserId"), startPosition, startPosition, map);
+        p2 = new Player(s2, (Integer) s2.getAttributes().get("UserId"), startPosition, -1 * startPosition, map);
         sender = new MessageSender();
         GameLoop gl = new GameLoop(this);
         System.out.println("im in room construcotr2");
@@ -22,6 +26,25 @@ public class Room {
         System.out.println("im in room construcotr3");
 
     }
+    private void mapInit() {
+        map = new ArrayList<>(15);
+        map.add(new House(0 ,0 , 57, 58));
+        map.add(new House(-136 ,88 , 18, 17));
+        map.add(new House(-48 ,108 , 18, 17));
+        map.add(new House(-20 ,56, 18, 17));
+        map.add(new House(-136 ,-20 , 18, 17));
+        map.add(new House(68 ,40 , 18, 17));
+        map.add(new House(100 ,40, 18, 17));
+        map.add(new House(132 ,40 , 18, 17));
+        map.add(new House(-100 ,24 , 32, 20));
+        map.add(new House(-128 ,-88 , 32, 20));
+        map.add(new House(-20 ,-92 , 20, 32));
+        map.add(new House(32 ,104 , 32, 20));
+        map.add(new House(140 ,84 , 20, 32));
+        map.add(new House(-84 ,64 , 42, 25));
+        map.add(new House(-56 ,-40 , 25, 42));
+    }
+
 
     public void getInstructions(ActionStates message, Integer uid) {
         if (uid.equals(p1.getId())) {

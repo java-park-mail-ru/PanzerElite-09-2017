@@ -26,9 +26,11 @@ public class MessageSender {
     public void send(WebSocketSession session, ReturningInstructions returning, Boolean flag) {
         try {
             returning.setMe(flag);
+            if(!flag) {
+                returning.setFire(false);
+            }
             session.sendMessage(getMessage(returning));
         } catch (Exception e) {
-            System.out.println("");
         }
     }
 }

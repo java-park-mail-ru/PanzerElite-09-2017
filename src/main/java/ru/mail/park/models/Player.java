@@ -2,28 +2,41 @@ package ru.mail.park.models;
 
 import org.springframework.web.socket.WebSocketSession;
 
+import java.util.ArrayList;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
+
 //CHECKSTYLE:OFF
 public class Player {
     private Integer id;
     private Coords coords;
+    private Coords bulletCoords;
     private Double angle;
     private Double turretAngle;
     private WebSocketSession session;
     private ActionStates actionStates;
+    private ActionStates DeprecatedMovemants;
+//    ScheduledExecutorService sh;
+    private ArrayList<House> map;
 
 
-    public Player(WebSocketSession s, Integer id, Double x, Double y) {
+    public Player(WebSocketSession s, Integer id, Double x, Double y, ArrayList map) {
+        this.map = map;
+        this.DeprecatedMovemants = new ActionStates(false, false, false, false, false, true, false);
+        this.bulletCoords = new Coords(0.0, 0.0);
         session = s;
         this.id = id;
         coords = new Coords(x, y);
         this.angle = -0.5 * Math.PI;
         this.turretAngle = 0.0;
-        this.actionStates = new ActionStates(false, false, false, false, false, false);
+        this.actionStates = new ActionStates(false, false, false, false, false, false, false);
+//        sh = Executors.newScheduledThreadPool(1);
     }
 
     public void updateActionStates(ActionStates actionStates) {
         this.actionStates = actionStates;
-        //System.out.println(actionStates.getForward() + " "+ actionStates.getBackward()+ " "+ actionStates.getRight()+ " "+ actionStates.getLeft());
     }
 
     private void moveForward() {
@@ -54,18 +67,46 @@ public class Player {
 
     public void update() {
         if (actionStates.getForward()) {
-            this.moveForward();
+            DeprecatedMovemants.setBackward(false);
+            if (!DeprecatedMovemants.getForward()) {
+                moveForward();
+            }
+            if (tankCollisionWithMap()) {
+                DeprecatedMovemants.setForward(true);
+            } else {
+                DeprecatedMovemants.setForward(false);
+            }
         }
         if (actionStates.getBackward()) {
-            this.moveBackward();
+            DeprecatedMovemants.setForward(false);
+            if (!DeprecatedMovemants.getBackward()) {
+                moveBackward();
+            }
+            if (tankCollisionWithMap()) {
+                DeprecatedMovemants.setBackward(true);
+            } else {
+                DeprecatedMovemants.setBackward(false);
+            }
         }
         if (actionStates.getRight()) {
-            this.turnRight();
-
+            if (!DeprecatedMovemants.getRight()) {
+                turnRight();
+            }
+            if (tankCollisionWithMap()) {
+                DeprecatedMovemants.setRight(true);
+            } else {
+                DeprecatedMovemants.setRight(false);
+            }
         }
         if (actionStates.getLeft()) {
-            this.turnLeft();
-
+            if (!DeprecatedMovemants.getLeft()) {
+                turnLeft();
+            }
+            if (tankCollisionWithMap()) {
+                DeprecatedMovemants.setLeft(true);
+            } else {
+                DeprecatedMovemants.setLeft(false);
+            }
         }
         if (actionStates.getTurretLeft()) {
             this.turnTurretLeft();
@@ -73,7 +114,81 @@ public class Player {
         if (actionStates.getTurretRight()) {
             this.turnTurretRight();
         }
+        if(actionStates.getFire() ) {
+//            sh.schedule(()-> DeprecatedMovemants.setFire(true), 4000, TimeUnit.MILLISECONDS);
+            bulletCoords = fireCollision();
+        }
     }
+
+
+    private boolean pointInPolygon(Double x, Double y, House h) {
+        Double leftx = (h.x - h.height/2) * 1.0;
+        Double rightx = leftx + h.height;
+        if (x < rightx && x > leftx) {
+            Double lefty = (h.y - h.width/2) * 1.0;
+            Double righty = lefty + h.width;
+            if (y < righty && y > lefty) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private ArrayList<Coords> getTankPoints() {
+        ArrayList<Coords> angles = new ArrayList<>(4);
+        angles.add(new Coords(this.coords.x + 3.9 * Math.abs(Math.sin(this.angle)),
+                this.coords.y + 3.9 * Math.abs(Math.cos(this.angle))));
+        angles.add(new Coords(this.coords.x - 3.9 * Math.abs(Math.sin(this.angle)),
+                this.coords.y - 3.9 * Math.abs(Math.cos(this.angle))));
+        angles.add(new Coords(this.coords.x + 3.9 * Math.abs(Math.sin(this.angle)),
+                this.coords.y - 3.9 * Math.abs(Math.cos(this.angle))));
+        angles.add(new Coords(this.coords.x - 3.9 * Math.abs(Math.sin(this.angle)),
+                this.coords.y + 3.9 * Math.abs(Math.cos(this.angle))));
+        return angles;
+    }
+
+    private boolean tankCollisionWithMap() {
+        boolean flag = false;
+        final ArrayList<Coords> angles = getTankPoints();
+        outerloop:
+        for (House house : this.map) {
+            for (Coords c : angles) {
+                flag = pointInPolygon(c.x, c.y, house);
+                if (flag) {
+                    break outerloop;
+                }
+            }
+        }
+        return flag;
+    }
+
+    private Coords fireCollision() {
+        Integer cnt = 0;
+        Coords currentCoords = new Coords(this.coords.x, this.coords.y);
+        final Double currentAngle = turretAngle;
+        while (!this.isBulletInHouse(currentCoords) && cnt < 10000) {
+            currentCoords.x += 0.1 * Math.sin(currentAngle);
+            currentCoords.y += 0.1 * Math.cos(currentAngle);
+            cnt++;
+        }
+        if (cnt < 10000) {
+            return currentCoords;
+        }
+        return new Coords(0.0, 0.0);
+    }
+
+    private boolean isBulletInHouse(Coords c) {
+        boolean flag = false;
+        outerloop:
+        for (House house : this.map) {
+            flag = pointInPolygon(c.x, c.y, house);
+            if (flag) {
+                break outerloop;
+            }
+        }
+        return flag;
+    }
+
 
     public Integer getId() {
         return id;
@@ -108,7 +223,7 @@ public class Player {
     }
 
     public ReturningInstructions getInstructionsOfPlayer() {
-        return new ReturningInstructions(true, coords, angle, turretAngle, 0, false);
+        return new ReturningInstructions(true, coords, bulletCoords, angle, turretAngle, 0, actionStates.getFire());
     }
 
     public WebSocketSession getSession() {
