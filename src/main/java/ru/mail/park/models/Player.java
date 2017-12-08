@@ -122,7 +122,6 @@ public class Player {
             this.cameraType %= 3;
         }
         if(actionStates.getFire() ) {
-            actionStates.setFire(false);
             bulletCoords = fireCollision();
         }
     }
@@ -230,7 +229,9 @@ public class Player {
     }
 
     public ReturningInstructions getInstructionsOfPlayer() {
-        return new ReturningInstructions(true, coords, bulletCoords, angle, turretAngle, cameraType, actionStates.getFire());
+        ReturningInstructions ret =  new ReturningInstructions(true, coords, bulletCoords, angle, turretAngle, cameraType, actionStates.getFire());
+        actionStates.setFire(false);
+        return ret;
     }
 
     public WebSocketSession getSession() {
