@@ -122,6 +122,7 @@ public class Player {
             this.cameraType %= 3;
         }
         if(actionStates.getFire() ) {
+            actionStates.setFire(false);
             bulletCoords = fireCollision();
         }
     }

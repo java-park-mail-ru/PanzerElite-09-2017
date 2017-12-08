@@ -37,6 +37,15 @@ public final class RoomService {
         }
     }
 
+    public void destroyRoom(Long id) {
+        System.out.println("destroy room");
+        lobbies.get(id).stopGame();
+        lobbies.remove(id);
+    }
+    public void removeFromQueue(WebSocketSession session) {
+        queue.remove(session);
+    }
+
     public void getMessage(ActionStates message, WebSocketSession s) {
         if (!lobbies.isEmpty()) {
 

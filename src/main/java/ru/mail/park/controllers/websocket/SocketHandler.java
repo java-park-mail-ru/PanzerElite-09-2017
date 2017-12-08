@@ -41,7 +41,7 @@ public class SocketHandler extends TextWebSocketHandler {
             closeSessionSilently(session, ACCESS_DENIED);
             return;
         } else {
-            LOGGER.warn("its ok");
+            System.out.println("its ok");
             session.getAttributes().put("UserId", user.getId());
             roomService.add(session);
         }
@@ -77,7 +77,9 @@ public class SocketHandler extends TextWebSocketHandler {
 
     @Override
     public void handleTransportError(WebSocketSession webSocketSession, Throwable throwable) {
-        LOGGER.warn("Websocket transport problem", throwable);
+//        LOGGER.warn("Websocket transport problem", throwable);
+        System.out.println("Websocket transport problem");
+        closeSessionSilently(webSocketSession, ACCESS_DENIED);
     }
 
     private void closeSessionSilently(@NotNull WebSocketSession session, @Nullable CloseStatus closeStatus) {
@@ -85,9 +87,14 @@ public class SocketHandler extends TextWebSocketHandler {
         if (status == null) {
             closeStatus = SERVER_ERROR;
         }
-        //noinspection OverlyBroadCatchBlock
         try {
+            System.out.println("closing session");
             session.close(status);
+            if (session.getAttributes().get("RoomId") != null) {
+                roomService.destroyRoom((Long) session.getAttributes().get("RoomId"));
+            } else {
+                roomService.removeFromQueue(session);
+            }
         } catch (Exception ignore) {
             LOGGER.debug("Ignore", ignore);
         }

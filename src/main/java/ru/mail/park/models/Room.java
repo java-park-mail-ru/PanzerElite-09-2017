@@ -10,6 +10,7 @@ public class Room {
     private Player p2;
     private MessageSender sender;
     private ArrayList<House> map;
+    private GameLoop gl;
 
     public Room(WebSocketSession s1, WebSocketSession s2) {
         final Double startPosition = 50.0;
@@ -19,7 +20,7 @@ public class Room {
         p1 = new Player(s1, (Integer) s1.getAttributes().get("UserId"), startPosition, startPosition, map);
         p2 = new Player(s2, (Integer) s2.getAttributes().get("UserId"), startPosition, -1 * startPosition, map);
         sender = new MessageSender();
-        GameLoop gl = new GameLoop(this);
+        gl = new GameLoop(this);
         System.out.println("im in room construcotr2");
         Thread myThready = new Thread(gl);
         myThready.start();
@@ -63,5 +64,20 @@ public class Room {
         sender.send(p2.getSession(), p2.getInstructionsOfPlayer(), true);
     }
 
+    public void stopGame() {
+        System.out.println("stop game");
+        gl.stop();
+        try {
+            p1.getSession().close();
+        } catch (Exception e) {
+
+        }
+        try{
+            p2.getSession().close();
+        } catch (Exception e) {
+
+        }
+
+    }
 
 }

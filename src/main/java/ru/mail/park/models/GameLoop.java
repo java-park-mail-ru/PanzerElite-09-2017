@@ -31,13 +31,17 @@ public class GameLoop implements Runnable {
     public void run() {
         try {
             tickExecutor.execute(this);
-            System.out.println("try in run");
+            System.out.println("try in run");//TODO выводится два ращза почему?
             mainCycle();
         } finally {
             System.out.println("Mechanic executor terminated");
         }
     }
 
+    public void stop() {
+        Thread.currentThread().interrupt();
+        System.out.println("im in stop function");
+    }
     private void mainCycle() {
         while (true) {
             try {
@@ -52,14 +56,12 @@ public class GameLoop implements Runnable {
                 } catch (InterruptedException e) {
                     System.out.println("Mechanics thread was interrupted");
                 }
-
                 if (Thread.currentThread().isInterrupted()) {
+                    System.out.println("game loop interupted");
                     return;
                 }
-                final long afterSleep = clock.millis();
             } catch (RuntimeException e) {
                 System.out.println("catch v cikle");
-
             }
         }
     }
