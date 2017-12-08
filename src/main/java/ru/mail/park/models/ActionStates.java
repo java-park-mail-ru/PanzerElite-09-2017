@@ -10,7 +10,7 @@ public class ActionStates {
     private Boolean right;
     private Boolean turretLeft;
     private Boolean turretRight;
-    private Boolean fire;
+    private boolean fire;
     private Boolean changeCamera;
 
     @JsonCreator

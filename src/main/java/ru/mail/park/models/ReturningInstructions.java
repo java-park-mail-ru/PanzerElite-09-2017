@@ -11,7 +11,7 @@ public class ReturningInstructions {
     private Double y;
     private Double turretAngle;
     private Integer cameraType;
-    private Boolean fire;
+    private boolean fire;
     private Coords bulletCoords;
 
     @JsonCreator
