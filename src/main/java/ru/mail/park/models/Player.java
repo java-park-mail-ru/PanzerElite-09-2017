@@ -19,7 +19,7 @@ public class Player {
     private ActionStates actionStates;
     private ActionStates DeprecatedMovemants;
     private int cameraType;
-//    ScheduledExecutorService sh;
+    //    ScheduledExecutorService sh;
     private ArrayList<House> map;
 
 
@@ -116,22 +116,22 @@ public class Player {
         if (actionStates.getTurretRight()) {
             this.turnTurretRight();
         }
-        if(actionStates.getChangeCamera()) {
+        if (actionStates.getChangeCamera()) {
             actionStates.setChangeCamera(false);
             this.cameraType++;
             this.cameraType %= 3;
         }
-        if(actionStates.getFire() ) {
+        if (actionStates.getFire()) {
             bulletCoords = fireCollision();
         }
     }
 
 
     private boolean pointInPolygon(Double x, Double y, House h) {
-        Double leftx = (h.x - h.height/2) * 1.0;
+        Double leftx = (h.x - h.height / 2) * 1.0;
         Double rightx = leftx + h.height;
         if (x < rightx && x > leftx) {
-            Double lefty = (h.y - h.width/2) * 1.0;
+            Double lefty = (h.y - h.width / 2) * 1.0;
             Double righty = lefty + h.width;
             if (y < righty && y > lefty) {
                 return true;

@@ -58,10 +58,12 @@ public class Room {
     public void updateAndSend() {
         p1.update();
         p2.update();
-        sender.send(p1.getSession(), p1.getInstructionsOfPlayer(), true);
-        sender.send(p1.getSession(), p2.getInstructionsOfPlayer(), false);
-        sender.send(p2.getSession(), p1.getInstructionsOfPlayer(), false);
-        sender.send(p2.getSession(), p2.getInstructionsOfPlayer(), true);
+        ReturningInstructions r1 = p1.getInstructionsOfPlayer();
+        ReturningInstructions r2 = p2.getInstructionsOfPlayer();
+        sender.send(p1.getSession(), r1, true);
+        sender.send(p1.getSession(), r2, false);
+        sender.send(p2.getSession(), r1, false);
+        sender.send(p2.getSession(), r2, true);
     }
 
     public void stopGame() {
