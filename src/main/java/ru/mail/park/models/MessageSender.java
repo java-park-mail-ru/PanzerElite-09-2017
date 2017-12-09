@@ -26,10 +26,9 @@ public class MessageSender {
     public void send(WebSocketSession session, ReturningInstructions returning, Boolean flag) {
         try {
             returning.setMe(flag);
-            if(!flag) {
-//                returning.setFire(false);
-                returning.setCameraType(0);
-            }
+//            if(!flag) {
+//                returning.setCameraType(0);
+//            }
             session.sendMessage(getMessage(returning));
         } catch (Exception e) {
         }

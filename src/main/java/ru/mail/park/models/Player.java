@@ -56,11 +56,11 @@ public class Player {
     }
 
     private void turnTurretRight() {
-        this.turretAngle += 0.008 * Math.PI;
+        this.turretAngle += 0.004 * Math.PI;
     }
 
     private void turnTurretLeft() {
-        this.turretAngle -= 0.008 * Math.PI;
+        this.turretAngle -= 0.004 * Math.PI;
     }
 
     public void update() {
