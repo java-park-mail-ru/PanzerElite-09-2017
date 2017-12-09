@@ -66,7 +66,10 @@ public class Room {
         p1.update();
         p2.update();
         ReturningInstructions r1 = p1.getInstructionsOfPlayer();
+        r1.setHP(p2.getOpHP());
         ReturningInstructions r2 = p2.getInstructionsOfPlayer();
+        r2.setHP(p1.getOpHP());
+//        System.out.println(p2.getOpHP() + " " + p1.getOpHP());
         sender.send(p1.getSession(), r1, true);
         sender.send(p1.getSession(), r2, false);
         sender.send(p2.getSession(), r1, false);

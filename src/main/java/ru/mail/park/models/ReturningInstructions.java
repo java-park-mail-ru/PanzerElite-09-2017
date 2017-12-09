@@ -13,6 +13,7 @@ public class ReturningInstructions {
     private Integer cameraType;
     private boolean fire;
     private Coords bulletCoords;
+    private Integer HP;
 
     @JsonCreator
     public ReturningInstructions(
@@ -22,8 +23,10 @@ public class ReturningInstructions {
             @JsonProperty("angle") Double angle,
             @JsonProperty("turretAngle") Double turretAngle,
             @JsonProperty("cameraType") Integer cameraType,
+            @JsonProperty("HP") Integer HP,
             @JsonProperty("fire") boolean fire
     ) {
+        this.HP = HP;
         this.bulletCoords = bulletCoords;
         this.me = me;
         this.x = coords.x;
@@ -98,5 +101,13 @@ public class ReturningInstructions {
 
     public void setBulletCoords(Coords bulletCoords) {
         this.bulletCoords = bulletCoords;
+    }
+
+    public Integer getHP() {
+        return HP;
+    }
+
+    public void setHP(Integer HP) {
+        this.HP = HP;
     }
 }

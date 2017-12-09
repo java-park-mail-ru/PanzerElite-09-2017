@@ -15,8 +15,8 @@ public class Player {
     private ActionStates actionStates;
     private ActionStates DeprecatedMovemants;
     private int cameraType;
-    //    ScheduledExecutorService sh;
     private ArrayList<GameObject> map;
+    private Integer OpHP;
 
 
     public Player(WebSocketSession s, Integer id, Double x, Double y, ArrayList map) {
@@ -29,8 +29,8 @@ public class Player {
         coords = new Coords(x, y);
         this.angle = -0.5 * Math.PI;
         this.turretAngle = 0.0;
+        this.OpHP = 100;
         this.actionStates = new ActionStates(false, false, false, false, false, false, false, false);
-//        sh = Executors.newScheduledThreadPool(1);
     }
 
     public void updateActionStates(ActionStates actionStates) {
@@ -195,6 +195,9 @@ public class Player {
             if (!gameObject.id.equals(id)) {
                 flag = pointInPolygon(c.x, c.y, gameObject);
                 if (flag) {
+                    if(!gameObject.id.equals(-999)) {
+                        OpHP -= 25;
+                    }
                     break outerloop;
                 }
             }
@@ -236,7 +239,7 @@ public class Player {
     }
 
     public ReturningInstructions getInstructionsOfPlayer() {
-        ReturningInstructions ret = new ReturningInstructions(true, coords, bulletCoords, angle, turretAngle, cameraType, actionStates.getFire());
+        ReturningInstructions ret = new ReturningInstructions(true, coords, bulletCoords, angle, turretAngle, cameraType, OpHP, actionStates.getFire());
         actionStates.setFire(false);
         return ret;
     }
@@ -247,5 +250,13 @@ public class Player {
 
     public void setSession(WebSocketSession session) {
         this.session = session;
+    }
+
+    public Integer getOpHP() {
+        return OpHP;
+    }
+
+    public void setOpHP(Integer opHP) {
+        OpHP = opHP;
     }
 }
