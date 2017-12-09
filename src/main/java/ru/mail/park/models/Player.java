@@ -3,10 +3,6 @@ package ru.mail.park.models;
 import org.springframework.web.socket.WebSocketSession;
 
 import java.util.ArrayList;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
 
 //CHECKSTYLE:OFF
 public class Player {
@@ -20,7 +16,7 @@ public class Player {
     private ActionStates DeprecatedMovemants;
     private int cameraType;
     //    ScheduledExecutorService sh;
-    private ArrayList<House> map;
+    private ArrayList<GameObject> map;
 
 
     public Player(WebSocketSession s, Integer id, Double x, Double y, ArrayList map) {
@@ -124,10 +120,17 @@ public class Player {
         if (actionStates.getFire()) {
             bulletCoords = fireCollision();
         }
+        if (map.get(16).id.equals(id)) {
+            map.get(16).x = coords.x;
+            map.get(16).y = coords.y;
+        } else {
+            map.get(15).x = coords.x;
+            map.get(15).y = coords.y;
+        }
     }
 
 
-    private boolean pointInPolygon(Double x, Double y, House h) {
+    private boolean pointInPolygon(Double x, Double y, GameObject h) {
         Double leftx = (h.x - h.height / 2) * 1.0;
         Double rightx = leftx + h.height;
         if (x < rightx && x > leftx) {
@@ -157,11 +160,13 @@ public class Player {
         boolean flag = false;
         final ArrayList<Coords> angles = getTankPoints();
         outerloop:
-        for (House house : this.map) {
-            for (Coords c : angles) {
-                flag = pointInPolygon(c.x, c.y, house);
-                if (flag) {
-                    break outerloop;
+        for (GameObject gameObject : this.map) {
+            if (!gameObject.id.equals(id)) {
+                for (Coords c : angles) {
+                    flag = pointInPolygon(c.x, c.y, gameObject);
+                    if (flag) {
+                        break outerloop;
+                    }
                 }
             }
         }
@@ -186,10 +191,12 @@ public class Player {
     private boolean isBulletInHouse(Coords c) {
         boolean flag = false;
         outerloop:
-        for (House house : this.map) {
-            flag = pointInPolygon(c.x, c.y, house);
-            if (flag) {
-                break outerloop;
+        for (GameObject gameObject : this.map) {
+            if (!gameObject.id.equals(id)) {
+                flag = pointInPolygon(c.x, c.y, gameObject);
+                if (flag) {
+                    break outerloop;
+                }
             }
         }
         return flag;
@@ -229,7 +236,7 @@ public class Player {
     }
 
     public ReturningInstructions getInstructionsOfPlayer() {
-        ReturningInstructions ret =  new ReturningInstructions(true, coords, bulletCoords, angle, turretAngle, cameraType, actionStates.getFire());
+        ReturningInstructions ret = new ReturningInstructions(true, coords, bulletCoords, angle, turretAngle, cameraType, actionStates.getFire());
         actionStates.setFire(false);
         return ret;
     }

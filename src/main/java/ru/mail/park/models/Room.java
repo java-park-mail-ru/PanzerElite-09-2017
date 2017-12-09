@@ -9,7 +9,7 @@ public class Room {
     private Player p1;
     private Player p2;
     private MessageSender sender;
-    private ArrayList<House> map;
+    private ArrayList<GameObject> map;
     private GameLoop gl;
 
     public Room(WebSocketSession s1, WebSocketSession s2) {
@@ -19,6 +19,8 @@ public class Room {
         mapInit();
         p1 = new Player(s1, (Integer) s1.getAttributes().get("UserId"), startPosition, startPosition, map);
         p2 = new Player(s2, (Integer) s2.getAttributes().get("UserId"), startPosition, -1 * startPosition, map);
+        map.add(new GameObject(p1.getCoords().x, p1.getCoords().y, 6, 6, p1.getId()));
+        map.add(new GameObject(p2.getCoords().x, p2.getCoords().y, 6, 6, p2.getId()));
         sender = new MessageSender();
         gl = new GameLoop(this);
         System.out.println("im in room construcotr2");
@@ -27,23 +29,28 @@ public class Room {
         System.out.println("im in room construcotr3");
 
     }
+
     private void mapInit() {
-        map = new ArrayList<>(15);
-        map.add(new House(0 ,0 , 57, 58));
-        map.add(new House(-136 ,88 , 18, 17));
-        map.add(new House(-48 ,108 , 18, 17));
-        map.add(new House(-20 ,56, 18, 17));
-        map.add(new House(-136 ,-20 , 18, 17));
-        map.add(new House(68 ,40 , 18, 17));
-        map.add(new House(100 ,40, 18, 17));
-        map.add(new House(132 ,40 , 18, 17));
-        map.add(new House(-100 ,24 , 32, 20));
-        map.add(new House(-128 ,-88 , 32, 20));
-        map.add(new House(-20 ,-92 , 20, 32));
-        map.add(new House(32 ,104 , 32, 20));
-        map.add(new House(140 ,84 , 20, 32));
-        map.add(new House(-84 ,64 , 42, 25));
-        map.add(new House(-56 ,-40 , 25, 42));
+        map = new ArrayList<>(17);
+//        map.add(new GameObject(p1.getCoords().x, p1.getCoords().y, 6, 6, p1.getId()));
+//        map.add(new GameObject(p2.getCoords().x, p2.getCoords().y, 6, 6, p2.getId()));
+//        map.add(new GameObject(150.0, 150.0, 6, 6, p1.getId()));
+//        map.add(new GameObject(150.0, -150.0, 6, 6, p2.getId()));
+        map.add(new GameObject(0.0, 0.0, 57, 58));
+        map.add(new GameObject(-136.0, 88.0, 18, 17));
+        map.add(new GameObject(-48.0, 108.0, 18, 17));
+        map.add(new GameObject(-20.0, 56.0, 18, 17));
+        map.add(new GameObject(-136.0, -20.0, 18, 17));
+        map.add(new GameObject(68.0, 40.0, 18, 17));
+        map.add(new GameObject(100.0, 40.0, 18, 17));
+        map.add(new GameObject(132.0, 40.0, 18, 17));
+        map.add(new GameObject(-100.0, 24.0, 32, 20));
+        map.add(new GameObject(-128.0, -88.0, 32, 20));
+        map.add(new GameObject(-20.0, -92.0, 20, 32));
+        map.add(new GameObject(32.0, 104.0, 32, 20));
+        map.add(new GameObject(140.0, 84.0, 20, 32));
+        map.add(new GameObject(-84.0, 64.0, 42, 25));
+        map.add(new GameObject(-56.0, -40.0, 25, 42));
     }
 
 
@@ -74,7 +81,7 @@ public class Room {
         } catch (Exception e) {
 
         }
-        try{
+        try {
             p2.getSession().close();
         } catch (Exception e) {
 
