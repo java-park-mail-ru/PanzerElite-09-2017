@@ -239,7 +239,7 @@ public class Player {
     }
 
     public ReturningInstructions getInstructionsOfPlayer() {
-        ReturningInstructions ret = new ReturningInstructions(true, coords, bulletCoords, angle, turretAngle, cameraType, OpHP, actionStates.getFire());
+        ReturningInstructions ret = new ReturningInstructions(true, coords, bulletCoords, angle, turretAngle, cameraType, OpHP, actionStates.getFire(), 0);
         actionStates.setFire(false);
         return ret;
     }

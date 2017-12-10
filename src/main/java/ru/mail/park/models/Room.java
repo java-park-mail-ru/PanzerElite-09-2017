@@ -69,10 +69,25 @@ public class Room {
         r1.setHP(p2.getOpHP());
         ReturningInstructions r2 = p2.getInstructionsOfPlayer();
         r2.setHP(p1.getOpHP());
+        gameState(r1,r2);
         sender.send(p1.getSession(), r1, true);
         sender.send(p1.getSession(), r2, false);
         sender.send(p2.getSession(), r1, false);
         sender.send(p2.getSession(), r2, true);
+    }
+
+    private void gameState(ReturningInstructions r1, ReturningInstructions r2) {
+        if(p1.getOpHP() <= 0) {
+            r1.setVictory(1);
+            r2.setVictory(-1);
+            if(p2.getOpHP() <=0) {
+                r1.setVictory(0);
+                r2.setVictory(0);
+            }
+        } else if(p2.getOpHP() <=0) {
+            r1.setVictory(-1);
+            r2.setVictory(1);
+        }
     }
 
     public void stopGame() {
