@@ -13,6 +13,8 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.mail.park.models.User;
 
 import java.sql.PreparedStatement;
+import java.util.ArrayList;
+import java.util.List;
 
 
 @Service
@@ -41,8 +43,8 @@ public class UserService {
         try {
             template.update(con -> {
                 final PreparedStatement pst = con.prepareStatement(
-                        "insert into users(login, password)"
-                                + " values(?,?)" + " returning id",
+                        "insert into users(login, password, deaths)"
+                                + " values(?,?, 1)" + " returning id",
                         PreparedStatement.RETURN_GENERATED_KEYS);
                 pst.setString(1, body.getLogin());
                 pst.setString(2, body.getPassword());
@@ -79,14 +81,93 @@ public class UserService {
             return false;
         }
     }
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
+    public Boolean IncrementFrags(User body) {
+        if (getUserByLogin(body.getLogin()) == null) {
+            return false;
+        }
+        final GeneratedKeyHolder keyHolder = new GeneratedKeyHolder();
+        try {
+            template.update(con -> {
+                final PreparedStatement pst = con.prepareStatement(
+                        "update users set"
+                                + "  frags = frags + 1 "
+                                + " where LOWER(login) = LOWER(?) ",
+                        PreparedStatement.RETURN_GENERATED_KEYS);
+                pst.setString(1, body.getLogin());
+                return pst;
+            }, keyHolder);
+            System.out.println("try sucsess");
+            return true;
+        } catch (Exception e) {
+            System.out.println("catch sucsess");
+            return false;
+        }
+    }
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
+    public Boolean IncrementDeaths(User body) {
+        if (getUserByLogin(body.getLogin()) == null) {
+            return false;
+        }
+        final GeneratedKeyHolder keyHolder = new GeneratedKeyHolder();
+        try {
+            template.update(con -> {
+                final PreparedStatement pst = con.prepareStatement(
+                        "update users set"
+                                + "  deaths = deaths + 1 "
+                                + " where LOWER(login) = LOWER(?) ",
+                        PreparedStatement.RETURN_GENERATED_KEYS);
+                pst.setString(1, body.getLogin());
+                return pst;
+            }, keyHolder);
+            return true;
+        } catch (DataAccessException e) {
+
+            return false;
+        }
+    }
+
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
+    public List<User> GetScoreBoards() {
+        try {
+            List<Object> myObj = new ArrayList<>();
+            StringBuilder myStr = new StringBuilder("SELECT id, login , frags, deaths from users ORDER BY (frags/deaths) DESC limit 10 ;");
+            List<User> result = template.query(myStr.toString()
+                    , myObj.toArray(), USER_SCORE);
+            return  result;
+//            return true;
+        } catch (DataAccessException e) {
+            return null;
+//            return false;
+        }
+    }
 
 
     private static final RowMapper<User> USER_MAPPER = (res, num) -> {
         String login = res.getString("login");
         String password = res.getString("password");
         Integer id = res.getInt("id");
-        return new User(id, login, password);
+        Integer frags = res.getInt("frags");
+        Integer deaths = res.getInt("deaths");
+//        if(deaths == 0) {
+//            deaths = 1;
+//        }
+        return new User(id,frags/deaths, login, password);
     };
+
+    private static final RowMapper<User> USER_SCORE = (res, num) -> {
+        String login = res.getString("login");
+        String password = "****";
+        Integer id = res.getInt("id");
+        Integer frags = res.getInt("frags");
+        Integer deaths = res.getInt("deaths");
+//        if(deaths == 0) {
+//            deaths = 1;
+//        }
+        return new User(id,frags/deaths, login, password);
+    };
+
+
 
 }
 

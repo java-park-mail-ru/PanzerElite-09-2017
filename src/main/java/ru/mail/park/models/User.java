@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class User {
 
     private Integer id;
+    private Double rank;
 
     private String login;
     private String password;
@@ -18,10 +19,11 @@ public class User {
     public User(
 
             @JsonProperty("id") int id,
-
+            @JsonProperty("rank") double rank,
             @JsonProperty("login") String login,
             @JsonProperty("password") String password
     ) {
+        this.rank = rank;
         this.id = id;
         this.login = login;
         this.password = password;
@@ -53,5 +55,14 @@ public class User {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+
+    public Double getRank() {
+        return rank;
+    }
+
+    public void setRank(Double rank) {
+        this.rank = rank;
     }
 }

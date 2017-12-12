@@ -63,6 +63,16 @@ public class UserController {
 
         }
     }
+    @RequestMapping(path = "/scoreboard", method = RequestMethod.GET, produces = "application/json")
+    public ResponseEntity<?> getScoreboard(HttpSession httpSession) {
+        final User user = (User) httpSession.getAttribute(SESSIONKEY);
+        if (user != null) {
+            return ResponseEntity.status(HttpStatus.OK).body(userService.GetScoreBoards());
+        } else {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new Message("UNAUTHORIZED"));
+
+        }
+    }
 
     @RequestMapping(path = "/logout", method = RequestMethod.GET, produces = "application/json")
 

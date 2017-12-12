@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.socket.WebSocketSession;
 import ru.mail.park.models.Room;
 import ru.mail.park.models.ActionStates;
+import ru.mail.park.services.UserService;
 
 import java.util.LinkedList;
 import java.util.Queue;
@@ -17,8 +18,11 @@ public final class RoomService {
     private Queue<WebSocketSession> queue;
     private ConcurrentHashMap<Long, Room> lobbies;
     private AtomicLong idgen;
+    private final UserService userService;
 
-    private RoomService() {
+
+    private RoomService( UserService usr) {
+        userService = usr;
         queue = new LinkedList<>();
         idgen = new AtomicLong(255);
         lobbies = new ConcurrentHashMap<>();
@@ -33,7 +37,7 @@ public final class RoomService {
             s1.getAttributes().put("RoomId", rId);
             WebSocketSession s2 = (WebSocketSession) queue.poll();
             s2.getAttributes().put("RoomId", rId);
-            lobbies.put(rId, new Room(s1, s2));
+            lobbies.put(rId, new Room(s1, s2, userService));
         }
     }
 

@@ -20,17 +20,17 @@ public class GameLoop implements Runnable {
         this.gameMechanics = gameMechanics;
     }
 
-    @PostConstruct
-    public void initAfterStartup() {
-        System.out.println("im in postConstruct");
-        tickExecutor.execute(this);
-        this.run();
-    }
+//    @PostConstruct
+//    public void initAfterStartup() {
+//        System.out.println("im in postConstruct");
+//        tickExecutor.execute(this);
+//        this.run();
+//    }
 
-    @Override
+//    @Override
     public void run() {
         try {
-            tickExecutor.execute(this);
+//            tickExecutor.execute(this);
             System.out.println("try in run");//TODO выводится два ращза почему?
             mainCycle();
         } finally {
@@ -42,6 +42,7 @@ public class GameLoop implements Runnable {
         Thread.currentThread().interrupt();
         System.out.println("im in stop function");
     }
+
     private void mainCycle() {
         while (true) {
             try {
@@ -55,13 +56,15 @@ public class GameLoop implements Runnable {
                     Thread.sleep(sleepingTime);
                 } catch (InterruptedException e) {
                     System.out.println("Mechanics thread was interrupted");
+                    break;
                 }
                 if (Thread.currentThread().isInterrupted()) {
                     System.out.println("game loop interupted");
-                    return;
+                    break;
                 }
             } catch (RuntimeException e) {
                 System.out.println("catch v cikle");
+                break;
             }
         }
     }
