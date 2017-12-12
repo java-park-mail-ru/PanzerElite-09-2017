@@ -133,7 +133,7 @@ public class UserService {
             List<Object> myObj = new ArrayList<>();
             StringBuilder myStr = new StringBuilder("SELECT id, login , frags, deaths from users ORDER BY (frags/deaths) DESC limit 10 ;");
             List<User> result = template.query(myStr.toString()
-                    , myObj.toArray(), USER_SCORE);
+                    , myObj.toArray(), USER_SCORE );
             return  result;
 //            return true;
         } catch (DataAccessException e) {
