@@ -63,11 +63,12 @@ public class UserController {
 
         }
     }
+
     @RequestMapping(path = "/scoreboard", method = RequestMethod.GET, produces = "application/json")
     public ResponseEntity<?> getScoreboard(HttpSession httpSession) {
         final User user = (User) httpSession.getAttribute(SESSIONKEY);
         if (user != null) {
-            return ResponseEntity.status(HttpStatus.OK).body(userService.GetScoreBoards());
+            return ResponseEntity.status(HttpStatus.OK).body(userService.getScoreBoards());
         } else {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new Message("UNAUTHORIZED"));
 
@@ -102,7 +103,6 @@ public class UserController {
     public void setHttpSession(HttpSession httpSession, User body) {
         httpSession.setAttribute(SESSIONKEY, body);
     }
-
 
 
 }

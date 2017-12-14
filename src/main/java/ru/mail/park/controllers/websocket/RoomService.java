@@ -1,5 +1,7 @@
 package ru.mail.park.controllers.websocket;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.web.socket.WebSocketSession;
 import ru.mail.park.models.Room;
@@ -15,23 +17,20 @@ import java.util.concurrent.atomic.AtomicLong;
 @Service
 public final class RoomService {
 
-    private Queue<WebSocketSession> queue;
-    private ConcurrentHashMap<Long, Room> lobbies;
-    private AtomicLong idgen;
+    private final Queue<WebSocketSession> queue = new LinkedList<>();;
+    private final ConcurrentHashMap<Long, Room> lobbies = new ConcurrentHashMap<>();;
+    private final AtomicLong idgen=  new AtomicLong(255);;
     private final UserService userService;
-
+    private static final Logger log = LoggerFactory.getLogger(RoomService.class);
 
     private RoomService( UserService usr) {
         userService = usr;
-        queue = new LinkedList<>();
-        idgen = new AtomicLong(255);
-        lobbies = new ConcurrentHashMap<>();
     }
 
     public void add(WebSocketSession s) {
         queue.add(s);
         if (queue.size() > 1) {
-            System.out.println("2 players found");
+            log.warn("2 players found");
             Long rId = idgen.getAndIncrement();
             WebSocketSession s1 = (WebSocketSession) queue.poll();
             s1.getAttributes().put("RoomId", rId);
@@ -42,7 +41,7 @@ public final class RoomService {
     }
 
     public void destroyRoom(Long id) {
-        System.out.println("destroy room");
+        log.warn("destroy room");
         lobbies.get(id).stopGame();
         lobbies.remove(id);
     }

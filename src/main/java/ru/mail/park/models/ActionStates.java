@@ -3,6 +3,9 @@ package ru.mail.park.models;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+
+//CHECKSTYLE:OFF
+//more then 7 parametrs
 public class ActionStates {
     private Boolean forward;
     private Boolean backward;

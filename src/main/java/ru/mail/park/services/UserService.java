@@ -81,8 +81,9 @@ public class UserService {
             return false;
         }
     }
+
     @Transactional(isolation = Isolation.REPEATABLE_READ)
-    public Boolean IncrementFrags(User body) {
+    public Boolean incrementFrags(User body) {
         if (getUserByLogin(body.getLogin()) == null) {
             return false;
         }
@@ -97,15 +98,14 @@ public class UserService {
                 pst.setString(1, body.getLogin());
                 return pst;
             }, keyHolder);
-            System.out.println("try sucsess");
             return true;
         } catch (Exception e) {
-            System.out.println("catch sucsess");
             return false;
         }
     }
+
     @Transactional(isolation = Isolation.REPEATABLE_READ)
-    public Boolean IncrementDeaths(User body) {
+    public Boolean incrementDeaths(User body) {
         if (getUserByLogin(body.getLogin()) == null) {
             return false;
         }
@@ -128,17 +128,14 @@ public class UserService {
     }
 
     @Transactional(isolation = Isolation.REPEATABLE_READ)
-    public List<User> GetScoreBoards() {
+    public List<User> getScoreBoards() {
         try {
             List<Object> myObj = new ArrayList<>();
             StringBuilder myStr = new StringBuilder("SELECT id, login , frags, deaths from users ORDER BY (frags/deaths) DESC limit 10 ;");
-            List<User> result = template.query(myStr.toString()
-                    , myObj.toArray(), USER_SCORE );
-            return  result;
-//            return true;
+            List<User> result = template.query(myStr.toString(), myObj.toArray(), USER_SCORE);
+            return result;
         } catch (DataAccessException e) {
             return null;
-//            return false;
         }
     }
 
@@ -149,10 +146,7 @@ public class UserService {
         Integer id = res.getInt("id");
         Integer frags = res.getInt("frags");
         Integer deaths = res.getInt("deaths");
-//        if(deaths == 0) {
-//            deaths = 1;
-//        }
-        return new User(id,frags/deaths, login, password);
+        return new User(id, frags / deaths, login, password);
     };
 
     private static final RowMapper<User> USER_SCORE = (res, num) -> {
@@ -161,12 +155,8 @@ public class UserService {
         Integer id = res.getInt("id");
         Integer frags = res.getInt("frags");
         Integer deaths = res.getInt("deaths");
-//        if(deaths == 0) {
-//            deaths = 1;
-//        }
-        return new User(id,frags/deaths, login, password);
+        return new User(id, frags / deaths, login, password);
     };
-
 
 
 }

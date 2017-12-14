@@ -30,18 +30,12 @@ public class SocketHandler extends TextWebSocketHandler {
         roomService = rs;
         this.handlerManager = manager;
         this.objectMapper = objectMapper;
-        System.out.println("constructor of socketHandeler");
     }
 
     @Override
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
-        final User user = (User) session.getAttributes().get(SESSIONKEY);
-        if (user == null) {
-            LOGGER.warn("User requested websocket is not registred or not logged in. Openning websocket session is denied.");
-            closeSessionSilently(session, ACCESS_DENIED);
-            return;
-        } else {
-            System.out.println("its ok");
+        final User user = checkUser(session);
+        if (user != null) {
             session.getAttributes().put("UserId", user.getId());
             roomService.add(session);
         }
@@ -52,13 +46,20 @@ public class SocketHandler extends TextWebSocketHandler {
         if (!session.isOpen()) {
             return;
         }
+        if (checkUser(session) == null) {
+            return;
+        }
+        handleMessage(session, message);
+    }
+
+    private User checkUser(WebSocketSession session) {
         final User user = (User) session.getAttributes().get(SESSIONKEY);
         if (user == null) {
             LOGGER.warn("User requested websocket is not registred or not logged in. Openning websocket session is denied.");
             closeSessionSilently(session, ACCESS_DENIED);
-            return;
+            return null;
         }
-        handleMessage(session, message);
+        return user;
     }
 
 
@@ -77,8 +78,7 @@ public class SocketHandler extends TextWebSocketHandler {
 
     @Override
     public void handleTransportError(WebSocketSession webSocketSession, Throwable throwable) {
-//        LOGGER.warn("Websocket transport problem", throwable);
-        System.out.println("Websocket transport problem");
+        //        LOGGER.warn("Websocket transport problem", throwable);
         closeSessionSilently(webSocketSession, ACCESS_DENIED);
     }
 
@@ -88,13 +88,12 @@ public class SocketHandler extends TextWebSocketHandler {
             closeStatus = SERVER_ERROR;
         }
         try {
-            System.out.println("closing session");
-            session.close(status);
             if (session.getAttributes().get("RoomId") != null) {
                 roomService.destroyRoom((Long) session.getAttributes().get("RoomId"));
             } else {
                 roomService.removeFromQueue(session);
             }
+            session.close(status);
         } catch (Exception ignore) {
             LOGGER.debug("Ignore", ignore);
         }

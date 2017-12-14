@@ -1,11 +1,15 @@
 package ru.mail.park.models;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.socket.WebSocketSession;
 import ru.mail.park.services.UserService;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
+//CHECKSTYLE:OFF
+//cause of coords
 public class Room {
     private Long id;
     private Player p1;
@@ -15,13 +19,12 @@ public class Room {
     private GameLoop gl;
     private final UserService userService;
     private Thread myThread;
+    private static final Logger log = LoggerFactory.getLogger(Room.class);
 
 
     public Room(WebSocketSession s1, WebSocketSession s2, UserService usr) {
         userService = usr;
-        ///
         final Double startPosition = 50.0;
-        System.out.println("im in room construcotr");
         this.id = (Long) s1.getAttributes().get("RoomId");
         mapInit();
         p1 = new Player(s1, (Integer) s1.getAttributes().get("UserId"), startPosition, startPosition, map);
@@ -30,10 +33,8 @@ public class Room {
         map.add(new GameObject(p2.getCoords().x, p2.getCoords().y, 6, 6, p2.getId()));
         sender = new MessageSender();
         gl = new GameLoop(this);
-        System.out.println("im in room construcotr2");
         myThread = new Thread(gl);
         myThread.start();
-        System.out.println("im in room construcotr3");
 
     }
 
@@ -54,10 +55,10 @@ public class Room {
         map.add(new GameObject(140.0, 84.0, 20, 32));
         map.add(new GameObject(-84.0, 64.0, 42, 25));
         map.add(new GameObject(-56.0, -40.0, 25, 42));
-//        map.add(new GameObject(-250.0, 0.0, 500, 2));
-//        map.add(new GameObject(250.0, 0.0, 500, 2));
-//        map.add(new GameObject(0.0, -250.0, 2, 500));
-//        map.add(new GameObject(0.0, 250.0, 2, 500));
+        //        map.add(new GameObject(-250.0, 0.0, 500, 2));
+        //        map.add(new GameObject(250.0, 0.0, 500, 2));
+        //        map.add(new GameObject(0.0, -250.0, 2, 500));
+        //        map.add(new GameObject(0.0, 250.0, 2, 500));
     }
 
 
@@ -76,7 +77,7 @@ public class Room {
         r1.setHP(p2.getOpHP());
         ReturningInstructions r2 = p2.getInstructionsOfPlayer();
         r2.setHP(p1.getOpHP());
-       final boolean flag =  gameState(r1, r2);
+        final boolean flag = gameState(r1, r2);
         if (!sender.send(p1.getSession(), r1, true)) {
             stopGame();
         }
@@ -85,7 +86,7 @@ public class Room {
         if (!sender.send(p2.getSession(), r2, true)) {
             stopGame();
         }
-        if(flag) {
+        if (flag) {
             stopGame();
         }
     }
@@ -93,24 +94,24 @@ public class Room {
     private boolean gameState(ReturningInstructions r1, ReturningInstructions r2) {
         if (p1.getOpHP() <= 0) {
             User u = (User) p1.getSession().getAttributes().get("user");
-            userService.IncrementFrags((User) p1.getSession().getAttributes().get("user"));
-            userService.IncrementDeaths((User) p2.getSession().getAttributes().get("user"));
+            userService.incrementFrags((User) p1.getSession().getAttributes().get("user"));
+            userService.incrementDeaths((User) p2.getSession().getAttributes().get("user"));
 
             r1.setVictory(1);
             r2.setVictory(-1);
             if (p2.getOpHP() <= 0) {
                 r1.setVictory(0);
                 r2.setVictory(0);
-                userService.IncrementFrags((User) p1.getSession().getAttributes().get("user"));
-                userService.IncrementDeaths((User) p2.getSession().getAttributes().get("user"));
-                userService.IncrementFrags((User) p2.getSession().getAttributes().get("user"));
-                userService.IncrementDeaths((User) p1.getSession().getAttributes().get("user"));
+                userService.incrementFrags((User) p1.getSession().getAttributes().get("user"));
+                userService.incrementDeaths((User) p2.getSession().getAttributes().get("user"));
+                userService.incrementFrags((User) p2.getSession().getAttributes().get("user"));
+                userService.incrementDeaths((User) p1.getSession().getAttributes().get("user"));
             }
             return true;
         } else if (p2.getOpHP() <= 0) {
             User u = (User) p1.getSession().getAttributes().get("user");
-            userService.IncrementFrags((User) p2.getSession().getAttributes().get("user"));
-            userService.IncrementDeaths((User) p1.getSession().getAttributes().get("user"));
+            userService.incrementFrags((User) p2.getSession().getAttributes().get("user"));
+            userService.incrementDeaths((User) p1.getSession().getAttributes().get("user"));
             r1.setVictory(-1);
             r2.setVictory(1);
             return true;
@@ -119,18 +120,17 @@ public class Room {
     }
 
     public void stopGame() {
-        System.out.println("stop game");
         gl.stop();
         myThread.interrupt();
         try {
             p1.getSession().close();
-        } catch (Exception e) {
-
+        } catch (IOException e) {
+            log.warn("cant close session of p1");
         }
         try {
             p2.getSession().close();
-        } catch (Exception e) {
-
+        } catch (IOException e) {
+            log.warn("cant close session of p2");
         }
 
     }

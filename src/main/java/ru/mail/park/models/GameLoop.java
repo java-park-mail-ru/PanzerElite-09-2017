@@ -1,7 +1,6 @@
 package ru.mail.park.models;
 
 
-import javax.annotation.PostConstruct;
 import java.time.Clock;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
@@ -20,27 +19,24 @@ public class GameLoop implements Runnable {
         this.gameMechanics = gameMechanics;
     }
 
-//    @PostConstruct
-//    public void initAfterStartup() {
-//        System.out.println("im in postConstruct");
-//        tickExecutor.execute(this);
-//        this.run();
-//    }
+    //    @PostConstruct
+    //    public void initAfterStartup() {
+    //        System.out.println("im in postConstruct");
+    //        tickExecutor.execute(this);
+    //        this.run();
+    //    }
 
-//    @Override
+    //    @Override
     public void run() {
-        try {
-//            tickExecutor.execute(this);
-            System.out.println("try in run");//TODO выводится два ращза почему?
-            mainCycle();
-        } finally {
-            System.out.println("Mechanic executor terminated");
-        }
+        //try {
+        //            tickExecutor.execute(this);
+        mainCycle();
+        //        } finally {
+        //        }
     }
 
     public void stop() {
         Thread.currentThread().interrupt();
-        System.out.println("im in stop function");
     }
 
     private void mainCycle() {
@@ -55,15 +51,12 @@ public class GameLoop implements Runnable {
                     final long sleepingTime = Math.max(0, STEP_TIME - (after - before));
                     Thread.sleep(sleepingTime);
                 } catch (InterruptedException e) {
-                    System.out.println("Mechanics thread was interrupted");
                     break;
                 }
                 if (Thread.currentThread().isInterrupted()) {
-                    System.out.println("game loop interupted");
                     break;
                 }
             } catch (RuntimeException e) {
-                System.out.println("catch v cikle");
                 break;
             }
         }
