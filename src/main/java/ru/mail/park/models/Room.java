@@ -77,14 +77,14 @@ public class Room {
         r1.setHP(p2.getOpHP());
         ReturningInstructions r2 = p2.getInstructionsOfPlayer();
         r2.setHP(p1.getOpHP());
-        final boolean flag = gameState(r1, r2);
+        boolean flag = gameState(r1, r2);
         if (!sender.send(p1.getSession(), r1, true)) {
-            stopGame();
+            flag = true;
         }
         sender.send(p1.getSession(), r2, false);
         sender.send(p2.getSession(), r1, false);
         if (!sender.send(p2.getSession(), r2, true)) {
-            stopGame();
+            flag = true;
         }
         if (flag) {
             stopGame();
@@ -92,14 +92,14 @@ public class Room {
     }
 
     private boolean gameState(ReturningInstructions r1, ReturningInstructions r2) {
-        if (p1.getOpHP() <= 0) {
+        if (p1.getOpHP() <= 0 || !p2.getSession().isOpen()) {
             User u = (User) p1.getSession().getAttributes().get("user");
             userService.incrementFrags((User) p1.getSession().getAttributes().get("user"));
             userService.incrementDeaths((User) p2.getSession().getAttributes().get("user"));
 
             r1.setVictory(1);
             r2.setVictory(-1);
-            if (p2.getOpHP() <= 0) {
+            if (p2.getOpHP() <= 0 || !p1.getSession().isOpen()) {
                 r1.setVictory(0);
                 r2.setVictory(0);
                 userService.incrementFrags((User) p1.getSession().getAttributes().get("user"));
@@ -108,7 +108,7 @@ public class Room {
                 userService.incrementDeaths((User) p1.getSession().getAttributes().get("user"));
             }
             return true;
-        } else if (p2.getOpHP() <= 0) {
+        } else if (p2.getOpHP() <= 0 || !p1.getSession().isOpen()) {
             User u = (User) p1.getSession().getAttributes().get("user");
             userService.incrementFrags((User) p2.getSession().getAttributes().get("user"));
             userService.incrementDeaths((User) p1.getSession().getAttributes().get("user"));
@@ -123,12 +123,16 @@ public class Room {
         gl.stop();
         myThread.interrupt();
         try {
-            p1.getSession().close();
+            if(p1.getSession().isOpen()){
+                p1.getSession().close();
+            }
         } catch (IOException e) {
             log.warn("cant close session of p1");
         }
         try {
-            p2.getSession().close();
+            if(p2.getSession().isOpen()) {
+                p2.getSession().close();
+            }
         } catch (IOException e) {
             log.warn("cant close session of p2");
         }

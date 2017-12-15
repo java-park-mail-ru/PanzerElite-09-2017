@@ -17,15 +17,19 @@ public class Player {
     private int cameraType;
     private ArrayList<GameObject> map;
     private Integer OpHP;
+    private boolean myFire;
+    private boolean myCamera;
 
 
     public Player(WebSocketSession s, Integer id, Double x, Double y, ArrayList map) {
         this.cameraType = 0;
+        this.myCamera = false;
         this.map = map;
         this.DeprecatedMovemants = new ActionStates(false, false, false, false, false, true, false, false);
         this.bulletCoords = new Coords(0.0, 0.0);
         session = s;
         this.id = id;
+        myFire = false;
         coords = new Coords(x, y);
         this.angle = -0.5 * Math.PI;
         this.turretAngle = 0.0;
@@ -35,6 +39,12 @@ public class Player {
 
     public void updateActionStates(ActionStates actionStates) {
         this.actionStates = actionStates;
+        if(this.actionStates.getFire()) {
+            myFire = true;
+        }
+        if(this.actionStates.getChangeCamera()) {
+            myCamera = true;
+        }
     }
 
     private void moveForward() {
@@ -112,12 +122,13 @@ public class Player {
         if (actionStates.getTurretRight()) {
             this.turnTurretRight();
         }
-        if (actionStates.getChangeCamera()) {
+        if (myCamera) {
             actionStates.setChangeCamera(false);
+            myCamera = false;
             this.cameraType++;
             this.cameraType %= 3;
         }
-        if (actionStates.getFire()) {
+        if (myFire) {
             bulletCoords = fireCollision();
         }
         if (map.get(16).id.equals(id)) {
@@ -239,8 +250,9 @@ public class Player {
     }
 
     public ReturningInstructions getInstructionsOfPlayer() {
-        ReturningInstructions ret = new ReturningInstructions(true, coords, bulletCoords, angle, turretAngle, cameraType, OpHP, actionStates.getFire(), 0);
+        ReturningInstructions ret = new ReturningInstructions(true, coords, bulletCoords, angle, turretAngle, cameraType, OpHP, myFire, 0);
         actionStates.setFire(false);
+        myFire = false;
         return ret;
     }
 
