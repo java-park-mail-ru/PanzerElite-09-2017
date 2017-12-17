@@ -19,10 +19,12 @@ public class Player {
     private Integer OpHP;
     private boolean myFire;
     private boolean myCamera;
+    private String enemyNick;
 
 
-    public Player(WebSocketSession s, Integer id, Double x, Double y, ArrayList map) {
+    public Player(WebSocketSession s, Integer id, Double x, Double y, ArrayList map, String enemyNick) {
         this.cameraType = 0;
+        this.enemyNick = enemyNick;
         this.myCamera = false;
         this.map = map;
         this.DeprecatedMovemants = new ActionStates(false, false, false, false, false, true, false, false);
@@ -32,7 +34,7 @@ public class Player {
         myFire = false;
         coords = new Coords(x, y);
         this.angle = -0.5 * Math.PI;
-        this.turretAngle = 0.0;
+        this.turretAngle = -0.5 * Math.PI;;
         this.OpHP = 100;
         this.actionStates = new ActionStates(false, false, false, false, false, false, false, false);
     }
@@ -151,6 +153,9 @@ public class Player {
                 return true;
             }
         }
+        if(x > 250 || x < -250 || y > 250 || y < -250) {
+            return true;
+        }
         return false;
     }
 
@@ -250,7 +255,7 @@ public class Player {
     }
 
     public ReturningInstructions getInstructionsOfPlayer() {
-        ReturningInstructions ret = new ReturningInstructions(true, coords, bulletCoords, angle, turretAngle, cameraType, OpHP, myFire, 0);
+        ReturningInstructions ret = new ReturningInstructions(true, coords, bulletCoords, angle, turretAngle, cameraType, OpHP, myFire, 0, enemyNick);
         actionStates.setFire(false);
         myFire = false;
         return ret;

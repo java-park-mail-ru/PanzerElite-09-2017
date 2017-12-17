@@ -15,6 +15,7 @@ public class ReturningInstructions {
     private Coords bulletCoords;
     private Integer HP;
     private Integer victory;
+    private String enemyNick;
 
     @JsonCreator
     public ReturningInstructions(
@@ -26,8 +27,10 @@ public class ReturningInstructions {
             @JsonProperty("cameraType") Integer cameraType,
             @JsonProperty("HP") Integer HP,
             @JsonProperty("fire") boolean fire,
-            @JsonProperty("victory") Integer victory
+            @JsonProperty("victory") Integer victory,
+            @JsonProperty("enemyNick") String enemyNick
     ) {
+        this.enemyNick = enemyNick;
         this.victory = -99;        // 1 - victory -1 - defeat 0 - draw
         this.HP = HP;
         this.bulletCoords = bulletCoords;
@@ -120,5 +123,13 @@ public class ReturningInstructions {
 
     public void setVictory(Integer victory) {
         this.victory = victory;
+    }
+
+    public String getEnemyNick() {
+        return enemyNick;
+    }
+
+    public void setEnemyNick(String enemyNick) {
+        this.enemyNick = enemyNick;
     }
 }

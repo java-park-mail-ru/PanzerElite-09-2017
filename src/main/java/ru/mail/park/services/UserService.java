@@ -139,6 +139,17 @@ public class UserService {
         }
     }
 
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
+    public Integer getUserPosition(Double rank) {
+        try {
+            return template.queryForObject(
+                    "SELECT count(*) FROM users WHERE (cast(frags AS FLOAT) / cast(deaths AS FLOAT)) >= ?;",
+                    new Object[]{rank}, Integer.class);
+        } catch (DataAccessException e) {
+            return null;
+        }
+    }
+
 
     private static final RowMapper<User> USER_MAPPER = (res, num) -> {
         String login = res.getString("login");
@@ -146,7 +157,7 @@ public class UserService {
         Integer id = res.getInt("id");
         Integer frags = res.getInt("frags");
         Integer deaths = res.getInt("deaths");
-        return new User(id, frags / deaths, login, password);
+        return new User(id, 0,(double)frags /(double) deaths, login, password);
     };
 
     private static final RowMapper<User> USER_SCORE = (res, num) -> {
@@ -155,9 +166,8 @@ public class UserService {
         Integer id = res.getInt("id");
         Integer frags = res.getInt("frags");
         Integer deaths = res.getInt("deaths");
-        return new User(id, frags / deaths, login, password);
+        return new User(id,0, (double)frags /(double) deaths, login, password);
     };
-
 
 }
 

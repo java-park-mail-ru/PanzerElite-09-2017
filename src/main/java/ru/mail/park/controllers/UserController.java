@@ -57,6 +57,7 @@ public class UserController {
     public ResponseEntity<?> getUser(HttpSession httpSession) {
         final User user = (User) httpSession.getAttribute(SESSIONKEY);
         if (user != null) {
+            user.setPosition(userService.getUserPosition(user.getRank()));
             return ResponseEntity.status(HttpStatus.OK).body(user);
         } else {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new Message("UNAUTHORIZED"));

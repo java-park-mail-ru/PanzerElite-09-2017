@@ -24,11 +24,10 @@ public class Room {
 
     public Room(WebSocketSession s1, WebSocketSession s2, UserService usr) {
         userService = usr;
-        final Double startPosition = 50.0;
         this.id = (Long) s1.getAttributes().get("RoomId");
         mapInit();
-        p1 = new Player(s1, (Integer) s1.getAttributes().get("UserId"), startPosition, startPosition, map);
-        p2 = new Player(s2, (Integer) s2.getAttributes().get("UserId"), startPosition, -1 * startPosition, map);
+        p1 = new Player(s1, (Integer) s1.getAttributes().get("UserId"), 80.0, 60.0, map, ((User) s2.getAttributes().get("user")).getLogin());
+        p2 = new Player(s2, (Integer) s2.getAttributes().get("UserId"), -80.0, -60.0, map, ((User) s1.getAttributes().get("user")).getLogin());
         map.add(new GameObject(p1.getCoords().x, p1.getCoords().y, 6, 6, p1.getId()));
         map.add(new GameObject(p2.getCoords().x, p2.getCoords().y, 6, 6, p2.getId()));
         sender = new MessageSender();
@@ -55,10 +54,6 @@ public class Room {
         map.add(new GameObject(140.0, 84.0, 20, 32));
         map.add(new GameObject(-84.0, 64.0, 42, 25));
         map.add(new GameObject(-56.0, -40.0, 25, 42));
-        //        map.add(new GameObject(-250.0, 0.0, 500, 2));
-        //        map.add(new GameObject(250.0, 0.0, 500, 2));
-        //        map.add(new GameObject(0.0, -250.0, 2, 500));
-        //        map.add(new GameObject(0.0, 250.0, 2, 500));
     }
 
 
@@ -123,14 +118,14 @@ public class Room {
         gl.stop();
         myThread.interrupt();
         try {
-            if(p1.getSession().isOpen()){
+            if (p1.getSession().isOpen()) {
                 p1.getSession().close();
             }
         } catch (IOException e) {
             log.warn("cant close session of p1");
         }
         try {
-            if(p2.getSession().isOpen()) {
+            if (p2.getSession().isOpen()) {
                 p2.getSession().close();
             }
         } catch (IOException e) {
