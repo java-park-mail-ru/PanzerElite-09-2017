@@ -131,7 +131,7 @@ public class UserService {
     public List<User> getScoreBoards() {
         try {
             List<Object> myObj = new ArrayList<>();
-            StringBuilder myStr = new StringBuilder("SELECT id, login , frags, deaths from users ORDER BY (frags/deaths) DESC limit 10 ;");
+            StringBuilder myStr = new StringBuilder("SELECT id, login , frags, deaths from users ORDER BY (cast(frags AS FLOAT) / cast(deaths AS FLOAT)) DESC limit 100 ;");
             List<User> result = template.query(myStr.toString(), myObj.toArray(), USER_SCORE);
             return result;
         } catch (DataAccessException e) {
