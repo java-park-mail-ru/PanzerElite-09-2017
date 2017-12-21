@@ -19,16 +19,13 @@ import static org.springframework.web.socket.CloseStatus.SERVER_ERROR;
 public class SocketHandler extends TextWebSocketHandler {
     private static final Logger LOGGER = LoggerFactory.getLogger(SocketHandler.class);
     private static final CloseStatus ACCESS_DENIED = new CloseStatus(4500, "Not logged in. Access denied");
-    private SocketMessageHandlerManager handlerManager;
     private ObjectMapper objectMapper;
     private static final String SESSIONKEY = "user";
     private RoomService roomService;
 
 
-    public SocketHandler(@NotNull SocketMessageHandlerManager manager,
-                         ObjectMapper objectMapper, RoomService rs) {
+    public SocketHandler(ObjectMapper objectMapper, RoomService rs) {
         roomService = rs;
-        this.handlerManager = manager;
         this.objectMapper = objectMapper;
     }
 
