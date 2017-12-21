@@ -1,0 +1,9 @@
+CREATE EXTENSION IF NOT EXISTS citext;
+CREATE TABLE users (
+  id       SERIAL PRIMARY KEY,
+  frags    INTEGER DEFAULT 0,
+  deaths   INTEGER DEFAULT 0,
+  login    CITEXT UNIQUE NOT NULL,
+  password TEXT          NOT NULL
+
+);

@@ -13,6 +13,8 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.mail.park.models.User;
 
 import java.sql.PreparedStatement;
+import java.util.ArrayList;
+import java.util.List;
 
 
 @Service
@@ -41,8 +43,8 @@ public class UserService {
         try {
             template.update(con -> {
                 final PreparedStatement pst = con.prepareStatement(
-                        "insert into users(login, password)"
-                                + " values(?,?)" + " returning id",
+                        "insert into users(login, password, deaths)"
+                                + " values(?,?, 1)" + " returning id",
                         PreparedStatement.RETURN_GENERATED_KEYS);
                 pst.setString(1, body.getLogin());
                 pst.setString(2, body.getPassword());
@@ -80,12 +82,91 @@ public class UserService {
         }
     }
 
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
+    public Boolean incrementFrags(User body) {
+        if (getUserByLogin(body.getLogin()) == null) {
+            return false;
+        }
+        final GeneratedKeyHolder keyHolder = new GeneratedKeyHolder();
+        try {
+            template.update(con -> {
+                final PreparedStatement pst = con.prepareStatement(
+                        "update users set"
+                                + "  frags = frags + 1 "
+                                + " where LOWER(login) = LOWER(?) ",
+                        PreparedStatement.RETURN_GENERATED_KEYS);
+                pst.setString(1, body.getLogin());
+                return pst;
+            }, keyHolder);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
+    public Boolean incrementDeaths(User body) {
+        if (getUserByLogin(body.getLogin()) == null) {
+            return false;
+        }
+        final GeneratedKeyHolder keyHolder = new GeneratedKeyHolder();
+        try {
+            template.update(con -> {
+                final PreparedStatement pst = con.prepareStatement(
+                        "update users set"
+                                + "  deaths = deaths + 1 "
+                                + " where LOWER(login) = LOWER(?) ",
+                        PreparedStatement.RETURN_GENERATED_KEYS);
+                pst.setString(1, body.getLogin());
+                return pst;
+            }, keyHolder);
+            return true;
+        } catch (DataAccessException e) {
+
+            return false;
+        }
+    }
+
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
+    public List<User> getScoreBoards() {
+        try {
+            List<Object> myObj = new ArrayList<>();
+            StringBuilder myStr = new StringBuilder("SELECT id, login , frags, deaths from users ORDER BY (cast(frags AS FLOAT) / cast(deaths AS FLOAT)) DESC limit 100 ;");
+            List<User> result = template.query(myStr.toString(), myObj.toArray(), USER_SCORE);
+            return result;
+        } catch (DataAccessException e) {
+            return null;
+        }
+    }
+
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
+    public Integer getUserPosition(Double rank) {
+        try {
+            return template.queryForObject(
+                    "SELECT count(*) FROM users WHERE (cast(frags AS FLOAT) / cast(deaths AS FLOAT)) >= ?;",
+                    new Object[]{rank}, Integer.class);
+        } catch (DataAccessException e) {
+            return null;
+        }
+    }
+
 
     private static final RowMapper<User> USER_MAPPER = (res, num) -> {
         String login = res.getString("login");
         String password = res.getString("password");
         Integer id = res.getInt("id");
-        return new User(id, login, password);
+        Integer frags = res.getInt("frags");
+        Integer deaths = res.getInt("deaths");
+        return new User(id, 0,(double)frags /(double) deaths, login, password);
+    };
+
+    private static final RowMapper<User> USER_SCORE = (res, num) -> {
+        String login = res.getString("login");
+        String password = "****";
+        Integer id = res.getInt("id");
+        Integer frags = res.getInt("frags");
+        Integer deaths = res.getInt("deaths");
+        return new User(id,0, (double)frags /(double) deaths, login, password);
     };
 
 }

@@ -13,7 +13,8 @@ import javax.servlet.http.HttpSession;
 
 @RestController
 
-@CrossOrigin({"*", "https://panzerelitefront.herokuapp.com"})
+@CrossOrigin({"http://127.0.0.1:8000", "https://panzerelite.herokuapp.com"})
+
 @RequestMapping("/api/user")
 public class UserController {
     private final UserService userService;
@@ -56,7 +57,19 @@ public class UserController {
     public ResponseEntity<?> getUser(HttpSession httpSession) {
         final User user = (User) httpSession.getAttribute(SESSIONKEY);
         if (user != null) {
+            user.setPosition(userService.getUserPosition(user.getRank()));
             return ResponseEntity.status(HttpStatus.OK).body(user);
+        } else {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new Message("UNAUTHORIZED"));
+
+        }
+    }
+
+    @RequestMapping(path = "/scoreboard", method = RequestMethod.GET, produces = "application/json")
+    public ResponseEntity<?> getScoreboard(HttpSession httpSession) {
+        final User user = (User) httpSession.getAttribute(SESSIONKEY);
+        if (user != null) {
+            return ResponseEntity.status(HttpStatus.OK).body(userService.getScoreBoards());
         } else {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new Message("UNAUTHORIZED"));
 
@@ -91,7 +104,6 @@ public class UserController {
     public void setHttpSession(HttpSession httpSession, User body) {
         httpSession.setAttribute(SESSIONKEY, body);
     }
-
 
 
 }
